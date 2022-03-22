@@ -1,24 +1,52 @@
-//Memanggil pool
-// const pool = require('./dbCon');
-
-const nodemailer = require('nodemailer')
 const db = require('../models/index.model')
 const User = db.user
-const UserInvitation = db.userInvitation
-const Op = db.Sequelize.Op
-const randtoken = require('rand-token');
-const mail = require('../configs/mail.config');
 
 const bcrypt = require("bcrypt");
 
+// Import the filesystem module
+const fs = require('fs');
+
+const multer = require('multer')
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './app/storage/images/users')
+    },
+    filename: function (req, file, cb) {
+        let extArray = file.mimetype.split("/");
+        let extension = extArray[extArray.length - 1];
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + extension
+        cb(null, file.fieldname + '-' + uniqueSuffix)
+    }
+})
+
+const uploadImg = multer({
+    storage: storage,
+    limits: {
+        fileSize: 1000000 //bytes
+    },
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+            cb(null, true);
+        } else {
+            cb(null, false);
+            return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+        }
+    }
+});
+
 module.exports = {
+    uploadImg: uploadImg,
     async read(req, res, next) {
         try {
             const { id } = req.query;
             const userData = await User.findAll({
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt']
-                }
+                where: {
+                    deletedAt: null
+                },
+                attributes: ['id', 'fullName', 'email', 'isActive', 'isVerified'],
+                order: [
+                    ['createdAt', 'ASC']
+                ]
             })
 
             res.status(200).send({
@@ -32,10 +60,39 @@ module.exports = {
         }
     },
 
+    async readById(req, res, next) {
+        try {
+            const { id } = req.params;
+            const userData = await User.findOne({
+                where: {
+                    id: id,
+                    deletedAt: null
+                },
+                attributes: ['id', 'employeeId', 'fullName', 'email', 'address']
+            })
+
+            if (userData) {
+                res.status(200).send({
+                    success: true,
+                    message: "Get User By Id Has Been Successfully.",
+                    data: userData
+                })
+            } else {
+                res.status(400).send({
+                    success: false,
+                    message: "User not found or maybe has been deleted."
+                })
+            }
+        }
+        catch (err) {
+            next(err)
+        }
+    },
+
     async create(req, res, next) {
         try {
             const { email, invitedBy } = req.body
-            
+
             const invitingUser = await User.create(req.body)
 
             res.status(201).json({
@@ -43,6 +100,160 @@ module.exports = {
                 message: 'succesfully creating user',
                 data: invitingUser
             })
+        }
+        catch (err) {
+            next(err)
+        }
+    },
+
+    async setActive(req, res, next) {
+        try {
+            const { id } = req.params
+            let status
+            const userData = await User.findOne({
+                where: {
+                    id: id
+                },
+                attributes: ['isActive', 'isVerified']
+            })
+
+            let isActive = userData.isActive
+            let isVerified = userData.isVerified
+
+            if (isActive && isVerified) {
+                status = false;
+            } else if (!isActive && isVerified) {
+                status = true;
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: 'This account needs to accepting the invitational first.'
+                })
+            }
+
+            const updateUser = await User.update({
+                isActive: status
+            }, {
+                where: {
+                    id: id
+                }
+            })
+
+            res.status(200).json({
+                success: true,
+                message: 'Change active status has been successfully.'
+            })
+        }
+        catch (err) {
+            next(err)
+        }
+    },
+
+    async update(req, res, next) {
+        try {
+            const { employeeId, fullName, address, avatar } = req.body
+            const { id } = req.params
+
+            let userUpdate = {}
+
+            console.log(req.file)
+
+            // const userData = await User.findOne({
+            //     where: {
+            //         id: id
+            //     },
+            //     attributes: ['isActive', 'isVerified']
+            // })
+
+            // if(userData) {
+            //     if (req.files) {
+            //         let upload = multer({ storage: storage }).single('avatar')
+            //         upload(req, res, function (err) {
+            //             if (err) {
+            //                 res.send({
+            //                     success: false,
+            //                     message: 'Error uploading file.'
+            //                 })
+            //             }
+            //             userUpdate = {
+            //                 employeeId: employeeId,
+            //                 fullName: fullName,
+            //                 address: address,
+            //                 avatar:req.files.avatar.name
+            //             }
+            //         })
+            //     } else {
+            //         let upload = multer({ storage: storage }).single('avatar')
+            //         upload(req, res, function (err) {
+            //             if (err) {
+            //                 res.send({
+            //                     success: false,
+            //                     message: 'Error uploading file.'
+            //                 })
+            //             }
+            //             userUpdate = {
+            //                 employeeId: employeeId,
+            //                 fullName: fullName,
+            //                 address: address,
+            //                 avatar:req.files.avatar.name
+            //             }
+            //         })
+            //         userUpdate = {
+            //             employeeId: employeeId,
+            //             fullName: fullName,
+            //             address: address
+            //         }
+            //     }
+            //     // const updateUser = await User.update(userUpdate, {
+            //     //     where: {
+            //     //         id: id
+            //     //     }
+            //     // })
+
+            //     // res.status(200).json({
+            //     //     success: true,
+            //     //     message: 'User has been updated.',
+            //     //     data: userUpdate
+            //     // })
+            // }
+
+        }
+        catch (err) {
+            next(err)
+        }
+    },
+
+    async delete(req, res, next) {
+        try {
+            const { id, deletedBy } = req.params
+
+            const userData = await User.findOne({
+                where: {
+                    id: id
+                },
+                attributes: ['isActive', 'isVerified']
+            })
+
+            if (userData) {
+                const updateUser = await User.update({
+                    deletedAt: new Date(),
+                    deletedBy: deletedBy
+                }, {
+                    where: {
+                        id: id
+                    }
+                })
+                res.status(200).json({
+                    success: true,
+                    message: 'Delete user has been successfully.'
+                })
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: 'User not found.'
+                })
+            }
+
         }
         catch (err) {
             next(err)

@@ -21,9 +21,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
         },
         deletedAt: {
-            type: "TIMESTAMP",
-            defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
-            allowNull: false,
+            type: "TIMESTAMP"
         },
         deletedBy: {
             type: Sequelize.STRING

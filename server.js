@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+const cors = require('cors')
+// const fileUpload = require('express-fileupload');
 
 //Inisiasi port yang akan dipakai
 const PORT = 3000;
@@ -12,14 +13,15 @@ const db = require('./app/models/index.model');
 const app = express();
 
 app.use(cors());
+
+
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // app.use('/uploads', express.static('uploads'));
 
 // app.use(forms.array());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 // Migrasi tabel yang ada dalam setiap model
 db.sequelize.sync({ force: false });

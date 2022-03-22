@@ -33,7 +33,7 @@ module.exports = {
                         email: email
                     },
                     attributes: {
-                        include: ['id', 'email']
+                        include: ['id', 'email', 'isVerified']
                     }
                 })
 
@@ -53,27 +53,27 @@ module.exports = {
                         }
                     });
 
-                    // let message = {
-                    //     from: "noreplyjustread8@gmail.com",
-                    //     to: invitingUser.email,
-                    //     subject: "Invitational - IDS Intranet",
-                    //     html: "<p>Hello! We'd like to invite you to our apps. If you want to join, please click button below. Thanks!</p> <br> <a href='http://localhost:3000/api/v1/users'>Accept Now!</a>",
-                    //     // attachments: [
-                    //     //     {
-                    //     //         filename: 'onlinewebtutor.png',
-                    //     //         path: __dirname + '/onlinewebtutor.png',
-                    //     //         cid: 'uniq-onlinewebtutor.png'
-                    //     //     }
-                    //     // ]
-                    // }
+                    let message = {
+                        from: "noreplyjustread8@gmail.com",
+                        to: invitingUser.email,
+                        subject: "Invitational - IDS Intranet",
+                        html: `<p>Hello! We'd like to invite you to our apps. If you want to join, please click button below. Thanks!</p> <br> <a href='http://127.0.0.1:8000/auth/invitational/${token}' target='_blank'>Accept Now</a>`,
+                        // attachments: [
+                        //     {
+                        //         filename: 'onlinewebtutor.png',
+                        //         path: __dirname + '/onlinewebtutor.png',
+                        //         cid: 'uniq-onlinewebtutor.png'
+                        //     }
+                        // ]
+                    }
 
-                    // transporter.sendMail(message, function (err, info) {
-                    //     if (err) {
-                    //         console.log(err);
-                    //     } else {
-                    //         console.log(info);
-                    //     }
-                    // })
+                    transporter.sendMail(message, function (err, info) {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            console.log(info);
+                        }
+                    })
                     res.status(201).json({
                         success: true,
                         message: 'succesfully inviting user',
@@ -81,17 +81,25 @@ module.exports = {
                         invitingData: invitingConfirmation
                     })
                 } else {
-                    const invitingConfirmation = await UserInvitation.create({
-                        UserId: userData.id,
-                        expiredDate: expiredDate,
-                        token: token,
-                        invitedBy: invitedBy
-                    })
-                    res.status(201).json({
-                        success: true,
-                        message: 'succesfully inviting user',
-                        data: invitingConfirmation
-                    })
+                    if(userData.isVerified) {
+                        res.status(400).json({
+                            success: false,
+                            message: 'This account already registered.'
+                        })
+                    } else {
+                        const invitingConfirmation = await UserInvitation.create({
+                            UserId: userData.id,
+                            expiredDate: expiredDate,
+                            token: token,
+                            invitedBy: invitedBy
+                        })
+                        res.status(201).json({
+                            success: true,
+                            message: 'succesfully inviting user',
+                            data: invitingConfirmation
+                        })
+
+                    }
                 }
             }
         }
@@ -123,30 +131,29 @@ module.exports = {
                         isVerified: true,
                         message: 'User already registered.'
                     })
+                } else {
+                    let ToDate = new Date();
+                    if (new Date(userData.expiredDate).getTime() <= ToDate.getTime()) {
+                        res.status(200).send({
+                            success: false,
+                            message: "Token is valid but already expired.",
+                            data: userData
+                        })
+                    } else {
+                        res.status(200).send({
+                            success: true,
+                            message: "Token is valid and not expired.",
+                            data: userData
+                        })
+                    }
                 }
 
-                let ToDate = new Date();
-                if (new Date(userData.expiredDate).getTime() <= ToDate.getTime()) {
-                    res.status(200).send({
-                        success: true,
-                        isExpired: true,
-                        isVerified: false,
-                        message: "Token is valid but already expired.",
-                        data: userData
-                    })
-                }
-                res.status(200).send({
-                    success: true,
-                    isExpired: false,
-                    isVerified: false,
-                    message: "Token is valid and not expired.",
-                    data: userData
+            } else {
+                res.status(400).send({
+                    success: false,
+                    message: "Token is not found."
                 })
             }
-            res.status(400).send({
-                success: false,
-                message: "Token is not found."
-            })
 
         }
         catch (err) {
@@ -156,7 +163,7 @@ module.exports = {
 
     async acceptingInvitation(req, res, next) {
         try {
-            const { token, password } = req.body
+            const { token, fullName, password } = req.body
             const user = await UserInvitation.findOne({
                 where: {
                     token: token
@@ -170,8 +177,6 @@ module.exports = {
                 ]
             })
 
-            console.log(user.User.dataValues.isVerified)
-
             if (user) {
                 const hashedPassword = bcrypt.hashSync(password, 10);
                 if (user.User.dataValues.isVerified) {
@@ -180,39 +185,42 @@ module.exports = {
                         isVerified: true,
                         message: 'User already registered.'
                     })
+                } else {
+                    const updateUser = await User.update({
+                        fullName: fullName,
+                        password: hashedPassword,
+                        isActive: true,
+                        isVerified: true,
+                        updatedAt: new Date(),
+                        updatedBy: user.User.dataValues.id
+                    }, {
+                        where: {
+                            id: user.User.dataValues.id
+                        }
+                    })
+    
+                    const updateInvitation = await UserInvitation.update({
+                        isApproved: true,
+                        updatedAt: new Date(),
+                        updatedBy: user.User.dataValues.id
+                    }, {
+                        where: {
+                            token: token
+                        }
+                    })
+    
+                    res.status(201).json({
+                        success: true,
+                        message: 'succesfully accepting invitation'
+                    })
                 }
-                const updateUser = await User.update({
-                    password: hashedPassword,
-                    isActive: true,
-                    isVerified: true,
-                    updatedAt: new Date(),
-                    updatedBy: user.User.dataValues.id
-                }, {
-                    where: {
-                        id: user.User.dataValues.id
-                    }
-                })
 
-                const updateInvitation = await UserInvitation.update({
-                    isApproved: true,
-                    updatedAt: new Date(),
-                    updatedBy: user.User.dataValues.id
-                }, {
-                    where: {
-                        token: token
-                    }
+            } else {
+                res.status(400).send({
+                    success: false,
+                    message: "User is not found."
                 })
-
-                res.status(201).json({
-                    success: true,
-                    message: 'succesfully accepting invitation'
-                })
-
             }
-            res.status(400).send({
-                success: false,
-                message: "User is not found."
-            })
 
         } catch (err) {
             next(err)
@@ -250,7 +258,7 @@ module.exports = {
 
                     const userLog = await UserLog.create({
                         UserId: userData.id,
-                        token: token,
+                        token: tokenJwt,
                         longitude: longitude,
                         latitude: latitude,
                         address: address,
@@ -269,8 +277,17 @@ module.exports = {
                             employeeId: userData.employeeId,
                         }
                     })
+                } else {
+                    res.status(400).json({
+                        success: false,
+                        message: 'your password is wrong.'
+                    })
                 }
             }
+            res.status(400).json({
+                success: false,
+                message: 'your email is not registered.'
+            })
         } catch (err) {
             next(err)
         }
