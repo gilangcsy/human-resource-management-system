@@ -186,6 +186,9 @@ module.exports = {
                             deletedAt: null
                         },
                     },
+                ],
+                order: [
+                    ['clockIn', 'ASC']
                 ]
             })
 
