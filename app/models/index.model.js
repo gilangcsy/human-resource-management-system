@@ -16,12 +16,8 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
         acquire: dbConfig.pool.acquire,
         idle: dbConfig.pool.idle,
     },
-    // dialectOptions: {
-    //     ssl: {
-    //         require: true,
-    //         rejectUnauthorized: false
-    //     }
-    // }
+    debug:  false,
+    dateStrings: 'date'
 })
 
 const db = {};
@@ -33,12 +29,16 @@ db.sequelize = sequelize;
 db.user = require('./user.model')(sequelize, Sequelize);
 db.userInvitation = require('./userInvitation.model')(sequelize, Sequelize);
 db.userLog = require('./userLog.model')(sequelize, Sequelize);
+db.attendance = require('./attendance.model')(sequelize, Sequelize);
 
 db.user.hasMany(db.userInvitation);
 db.userInvitation.belongsTo(db.user);
 
 db.user.hasMany(db.userLog);
 db.userLog.belongsTo(db.user);
+
+db.user.hasMany(db.attendance);
+db.attendance.belongsTo(db.user);
 
 
 module.exports = db;

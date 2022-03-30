@@ -72,13 +72,13 @@ module.exports = {
                             console.log(err);
                         } else {
                             console.log(info);
+                            res.status(201).json({
+                                success: true,
+                                message: 'succesfully inviting user',
+                                userData: invitingUser,
+                                invitingData: invitingConfirmation
+                            })
                         }
-                    })
-                    res.status(201).json({
-                        success: true,
-                        message: 'succesfully inviting user',
-                        userData: invitingUser,
-                        invitingData: invitingConfirmation
                     })
                 } else {
                     if(userData.isVerified) {
@@ -87,6 +87,29 @@ module.exports = {
                             message: 'This account already registered.'
                         })
                     } else {
+                        let message = {
+                            from: "noreplyjustread8@gmail.com",
+                            to: userData.email,
+                            subject: "Invitational - IDS Intranet",
+                            html: `<p>Hello! We'd like to invite you to our apps. If you want to join, please click button below. Thanks!</p> <br> <a href='http://127.0.0.1:8000/auth/invitational/${token}' target='_blank'>Accept Now</a>`,
+                        }
+
+                        let transporter = nodemailer.createTransport({
+                            service: 'gmail',
+                            auth: {
+                                user: mail.EMAIL,
+                                pass: mail.PASSWORD
+                            }
+                        });
+    
+                        transporter.sendMail(message, function (err, info) {
+                            if (err) {
+                                console.log(err)
+                            } else {
+                                console.log(info)
+                            }
+                        })
+                        
                         const invitingConfirmation = await UserInvitation.create({
                             UserId: userData.id,
                             expiredDate: expiredDate,
@@ -234,7 +257,7 @@ module.exports = {
                 where: {
                     email: email
                 },
-                attributes: ['id', 'email', 'employeeId', 'isActive', 'isVerified', 'password']
+                attributes: ['id', 'email', 'employeeId', 'isActive', 'isVerified', 'password', 'fullName']
             })
 
             if (userData) {
@@ -275,6 +298,7 @@ module.exports = {
                             userId: userData.id,
                             email: userData.email,
                             employeeId: userData.employeeId,
+                            fullName: userData.fullName,
                         }
                     })
                 } else {

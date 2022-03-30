@@ -19,7 +19,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// app.use('/uploads', express.static('uploads'));
+app.use('/storage', express.static('storage'));
 
 // app.use(forms.array());
 
@@ -36,6 +36,7 @@ app.get('/', (req, res) => {
 // require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 require('./app/routes/auth.routes')(app);
+require('./app/routes/attendance.routes')(app);
 
 app.listen(PORT, () => {
     console.log(`Server is running on PORT ${PORT}`);

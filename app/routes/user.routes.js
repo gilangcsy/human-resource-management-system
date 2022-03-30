@@ -1,6 +1,6 @@
 const controller = require('../controllers/user.controller');
 const API = require('../configs/db.config');
-const myMiddleware = require('../middlewares/upload');
+const { verifyUser } = require('../middlewares/index.middleware');
 
 module.exports = app => {
 
@@ -12,6 +12,9 @@ module.exports = app => {
 	router.get('/:id', controller.readById);
 	router.patch('/:id', controller.uploadImg.single('avatar'), controller.update);
 	router.post('/', controller.create);
+
+	
+	router.post('/absensi', verifyUser.checkIfUserExists, controller.absensi);
 
 	app.use(`${API.VERSION}/users`, router);
 }
