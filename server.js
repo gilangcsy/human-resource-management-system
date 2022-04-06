@@ -37,6 +37,7 @@ app.get('/', (req, res) => {
 require('./app/routes/user.routes')(app);
 require('./app/routes/auth.routes')(app);
 require('./app/routes/attendance.routes')(app);
+require('./app/routes/leaveType.routes')(app);
 
 app.listen(PORT, () => {
     console.log(`Server is running on PORT ${PORT}`);
