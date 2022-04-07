@@ -31,6 +31,7 @@ db.userInvitation = require('./userInvitation.model')(sequelize, Sequelize);
 db.userLog = require('./userLog.model')(sequelize, Sequelize);
 db.attendance = require('./attendance.model')(sequelize, Sequelize);
 db.leaveType = require('./leaveType.model')(sequelize, Sequelize);
+db.claimType = require('./claimType.model')(sequelize, Sequelize);
 
 db.user.hasMany(db.userInvitation);
 db.userInvitation.belongsTo(db.user);
