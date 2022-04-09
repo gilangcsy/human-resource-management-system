@@ -11,5 +11,6 @@ module.exports = {
         idle: 10000
     },
     timezone: "+07:00",
-    VERSION: '/api/v1'
+    VERSION: '/api/v1',
+    SCHEMA: 'public'
 }

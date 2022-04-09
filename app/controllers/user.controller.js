@@ -44,7 +44,7 @@ module.exports = {
                 where: {
                     deletedAt: null
                 },
-                attributes: ['id', 'fullName', 'email', 'isActive', 'isVerified'],
+                attributes: ['id', 'full_name', 'email', 'isActive', 'isVerified'],
                 order: [
                     ['createdAt', 'ASC']
                 ]
@@ -69,7 +69,7 @@ module.exports = {
                     id: id,
                     deletedAt: null
                 },
-                attributes: ['id', 'employeeId', 'fullName', 'email', 'address']
+                attributes: ['id', 'employeeId', 'full_name', 'email', 'address']
             })
 
             if (userData) {
@@ -152,7 +152,7 @@ module.exports = {
 
     async update(req, res, next) {
         try {
-            const { employeeId, fullName, address, avatar } = req.body
+            const { employeeId, full_name, address, avatar } = req.body
             const { id } = req.params
 
             let userUpdate = {}
@@ -178,7 +178,7 @@ module.exports = {
                         }
                         userUpdate = {
                             employeeId: employeeId,
-                            fullName: fullName,
+                            full_name: full_name,
                             address: address,
                             avatar:req.files.avatar.name
                         }
@@ -194,14 +194,14 @@ module.exports = {
                         }
                         userUpdate = {
                             employeeId: employeeId,
-                            fullName: fullName,
+                            full_name: full_name,
                             address: address,
                             avatar:req.files.avatar.name
                         }
                     })
                     userUpdate = {
                         employeeId: employeeId,
-                        fullName: fullName,
+                        full_name: full_name,
                         address: address
                     }
                 }
@@ -329,7 +329,7 @@ module.exports = {
             //         id: 3,
             //         deletedAt: null
             //     },
-            //     attributes: ['id', 'employeeId', 'fullName', 'email', 'address', 'createdAt']
+            //     attributes: ['id', 'employeeId', 'full_name', 'email', 'address', 'createdAt']
             // })
             
 			// let createdAt = userData.createdAt

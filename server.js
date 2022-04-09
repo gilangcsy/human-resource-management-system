@@ -39,6 +39,7 @@ require('./app/routes/auth.routes')(app);
 require('./app/routes/attendance.routes')(app);
 require('./app/routes/leaveType.routes')(app);
 require('./app/routes/claimType.routes')(app);
+require('./app/routes/approvalTemplate.routes')(app);
 
 app.listen(PORT, () => {
     console.log(`Server is running on PORT ${PORT}`);

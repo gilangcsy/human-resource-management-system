@@ -32,12 +32,16 @@ db.userLog = require('./userLog.model')(sequelize, Sequelize);
 db.attendance = require('./attendance.model')(sequelize, Sequelize);
 db.leaveType = require('./leaveType.model')(sequelize, Sequelize);
 db.claimType = require('./claimType.model')(sequelize, Sequelize);
+db.approvalTemplate = require('./approvalTemplate.model')(sequelize, Sequelize);
 
 db.user.hasMany(db.userInvitation);
 db.userInvitation.belongsTo(db.user);
 
 db.user.hasMany(db.userLog);
 db.userLog.belongsTo(db.user);
+
+// db.user.hasMany(db.approvalSetting);
+// db.approvalSetting.belongsTo(db.user);
 
 db.user.hasMany(db.attendance);
 db.attendance.belongsTo(db.user);

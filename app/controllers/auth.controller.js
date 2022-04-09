@@ -13,6 +13,7 @@ const mail = require('../configs/mail.config')
 const config = require('../configs/auth.config')
 
 const bcrypt = require('bcrypt');
+const e = require('express')
 
 module.exports = {
     async invite(req, res, next) {
@@ -148,27 +149,36 @@ module.exports = {
             })
 
             if (userData) {
-                if (userData.User.dataValues.isVerified) {
-                    res.status(400).json({
-                        success: false,
-                        isVerified: true,
-                        message: 'User already registered.'
-                    })
-                } else {
-                    let ToDate = new Date();
-                    if (new Date(userData.expiredDate).getTime() <= ToDate.getTime()) {
-                        res.status(200).send({
+                console.log(userData)
+                if(userData.User != null) {
+                    if (userData.User.dataValues.isVerified) {
+                        res.status(400).json({
                             success: false,
-                            message: "Token is valid but already expired.",
-                            data: userData
+                            isVerified: true,
+                            message: 'User already registered.'
                         })
                     } else {
-                        res.status(200).send({
-                            success: true,
-                            message: "Token is valid and not expired.",
-                            data: userData
-                        })
+                        let ToDate = new Date();
+                        if (new Date(userData.expiredDate).getTime() <= ToDate.getTime()) {
+                            res.status(200).send({
+                                success: false,
+                                message: "Token is valid but already expired.",
+                                data: userData
+                            })
+                        } else {
+                            res.status(200).send({
+                                success: true,
+                                message: "Token is valid and not expired.",
+                                data: userData
+                            })
+                        }
                     }
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        isVerified: false,
+                        message: 'User not found.'
+                    })
                 }
 
             } else {
@@ -186,7 +196,7 @@ module.exports = {
 
     async acceptingInvitation(req, res, next) {
         try {
-            const { token, fullName, password } = req.body
+            const { token, full_name, password } = req.body
             const user = await UserInvitation.findOne({
                 where: {
                     token: token
@@ -210,7 +220,7 @@ module.exports = {
                     })
                 } else {
                     const updateUser = await User.update({
-                        fullName: fullName,
+                        full_name: full_name,
                         password: hashedPassword,
                         isActive: true,
                         isVerified: true,
@@ -257,7 +267,7 @@ module.exports = {
                 where: {
                     email: email
                 },
-                attributes: ['id', 'email', 'employeeId', 'isActive', 'isVerified', 'password', 'fullName']
+                attributes: ['id', 'email', 'employeeId', 'isActive', 'isVerified', 'password', 'full_name']
             })
 
             if (userData) {
@@ -298,7 +308,7 @@ module.exports = {
                             userId: userData.id,
                             email: userData.email,
                             employeeId: userData.employeeId,
-                            fullName: userData.fullName,
+                            full_name: userData.full_name,
                         }
                     })
                 } else {

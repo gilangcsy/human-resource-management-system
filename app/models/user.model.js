@@ -3,7 +3,7 @@ module.exports = (sequelize, Sequelize) => {
         employeeId: {
             type: Sequelize.STRING
         },
-        fullName: {
+        full_name: {
             type: Sequelize.STRING
         },
         email: {
