@@ -13,8 +13,5 @@ module.exports = app => {
 	router.patch('/:id', controller.uploadImg.single('avatar'), controller.update);
 	router.post('/', controller.create);
 
-	
-	router.post('/absensi', verifyUser.checkIfUserExists, controller.absensi);
-
 	app.use(`${API.VERSION}/users`, router);
 }

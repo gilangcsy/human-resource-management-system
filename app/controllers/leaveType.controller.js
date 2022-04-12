@@ -11,7 +11,7 @@ module.exports = {
                 },
                 attributes: ['id', 'name'],
                 order: [
-                    ['createdAt', 'ASC']
+                    ['name', 'ASC']
                 ]
             })
 

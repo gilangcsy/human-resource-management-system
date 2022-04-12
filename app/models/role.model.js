@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const ClaimType = sequelize.define('ClaimType', {
+    const Role = sequelize.define('Role', {
         name: {
             type: Sequelize.STRING
         },
@@ -24,7 +24,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING
         },
     }, {
-        tableName: 'ClaimType'
+        tableName: 'Role'
     })
-    return ClaimType;
+    return Role;
 }

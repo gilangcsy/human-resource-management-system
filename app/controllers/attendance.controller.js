@@ -11,9 +11,9 @@ const multer = require('multer')
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         if (file.fieldname === 'clockInPhoto') {
-            cb(null, './storage/images/attendances/clockIn')
+            cb(null, './storage/attachment/attendances/clockIn')
         } else {
-            cb(null, './storage/images/attendances/clockOut')
+            cb(null, './storage/attachment/attendances/clockOut')
         }
     },
     filename: function (req, file, cb) {
@@ -60,7 +60,7 @@ module.exports = {
             if (today.getDay() == 6 || today.getDay() == 7) {
                 res.status(400).send({
                     success: false,
-                    message: `Cannot attendance in weekend.`
+                    message: `Cannot attending in weekend.`
                 })
             } else {
                 if (attendance) {
@@ -181,7 +181,7 @@ module.exports = {
                 include: [
                     {
                         model: User,
-                        attributes: ['id', 'employeeId', 'fullName'],
+                        attributes: ['id', 'employeeId', 'full_name'],
                         where: {
                             deletedAt: null
                         },

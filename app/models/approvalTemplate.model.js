@@ -34,9 +34,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING
         },
         updated_at: {
-            type: "TIMESTAMP",
-            defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
-            allowNull: false,
+            type: "TIMESTAMP"
         },
         updated_by: {
             type: Sequelize.STRING

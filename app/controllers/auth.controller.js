@@ -267,9 +267,9 @@ module.exports = {
                 where: {
                     email: email
                 },
-                attributes: ['id', 'email', 'employeeId', 'isActive', 'isVerified', 'password', 'full_name']
+                attributes: ['id', 'email', 'employee_id', 'isActive', 'isVerified', 'password', 'full_name']
             })
-
+            console.log(userData)
             if (userData) {
                 if (!userData.isVerified) {
                     res.status(400).json({
@@ -307,7 +307,7 @@ module.exports = {
                             token: tokenJwt,
                             userId: userData.id,
                             email: userData.email,
-                            employeeId: userData.employeeId,
+                            employee_id: userData.employee_id,
                             full_name: userData.full_name,
                         }
                     })
@@ -317,11 +317,13 @@ module.exports = {
                         message: 'your password is wrong.'
                     })
                 }
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: 'your email is not registered.'
+                })
             }
-            res.status(400).json({
-                success: false,
-                message: 'your email is not registered.'
-            })
+            
         } catch (err) {
             next(err)
         }

@@ -1,8 +1,5 @@
 const db = require('../models/index.model');
 const ApprovalTemplate = db.approvalTemplate
-const {
-    QueryTypes
-} = require('sequelize')
 
 const dbConfig = require('../configs/db.config')
 const SCHEMA = dbConfig.SCHEMA
@@ -17,6 +14,7 @@ module.exports = {
                 SELECT
                     ${ApprovalTemplate}.id,
                     ${ApprovalTemplate}.name,
+                    ${ApprovalTemplate}.type,
                     approver_one.full_name as approver_one_name,
                     approver_two.full_name as approver_two_name,
                     approver_three.full_name as approver_three_name
@@ -47,6 +45,10 @@ module.exports = {
                 SELECT
                     ${ApprovalTemplate}.id,
                     ${ApprovalTemplate}.name,
+                    ${ApprovalTemplate}.type,
+                    approver_one.id as approver_one_id,
+                    approver_two.id as approver_two_id,
+                    approver_three.id as approver_three_id,
                     approver_one.full_name as approver_one_name,
                     approver_two.full_name as approver_two_name,
                     approver_three.full_name as approver_three_name
@@ -78,8 +80,6 @@ module.exports = {
     async create(req, res, next) {
         try {
             const { name, type, approver_one, approver_two, approver_three, created_by } = req.body
-
-            console.log(req.body)
 
             if(!name || !approver_one) {
                 res.status(404).json({
