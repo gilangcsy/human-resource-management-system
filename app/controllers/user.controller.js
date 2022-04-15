@@ -44,7 +44,7 @@ module.exports = {
                 where: {
                     deletedAt: null
                 },
-                attributes: ['id', 'full_name', 'email', 'isActive', 'isVerified'],
+                attributes: ['id', 'full_name', 'email', 'isActive', 'isVerified', 'RoleId'],
                 order: [
                     ['createdAt', 'ASC']
                 ]

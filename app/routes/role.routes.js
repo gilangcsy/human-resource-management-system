@@ -1,4 +1,4 @@
-const controller = require('../controllers/approvalTemplate.controller');
+const controller = require('../controllers/role.controller');
 const API = require('../configs/db.config');
 
 module.exports = app => {
@@ -11,5 +11,5 @@ module.exports = app => {
 	router.delete('/:id', controller.delete);
 	router.patch('/:id', controller.update);
 
-	app.use(`${API.VERSION}/master/approvalTemplate/`, router);
+	app.use(`${API.VERSION}/master/role/`, router);
 }

@@ -224,6 +224,31 @@ module.exports = {
         }
     },
 
+    async readByApproverNowId(req, res, next) {
+        try {
+            const { id } = req.params
+
+            const activeApproval = await sequelize.query('SELECT * FROM get_all_leaves WHERE approver_now = $1', {
+                type: QueryTypes.SELECT,
+                bind: [id]
+            })
+
+            const historyApproval = await sequelize.query('SELECT * FROM get_all_leaves WHERE approver_one = $1 OR approver_two = $1 OR approver_three= $1', {
+                type: QueryTypes.SELECT,
+                bind: [id]
+            })
+
+            res.status(200).send({
+                success: true,
+                message: 'Get Leaves By Approver Now Id Has Been Successfully.',
+                data: activeApproval,
+                history: historyApproval
+            })
+        } catch (err) {
+            next (err)
+        }
+    },
+
     async approve(req, res, next) {
         try {
             const { UserId, id, isApproved } = req.body
@@ -236,11 +261,11 @@ module.exports = {
             let data = {}
 
             if(records) {
-                if(records[0].approver_one_id == UserId) {
+                if(records[0].approver_one == UserId) {
                     data.approval_one_status = isApproved == 1 ? true : false
-                } else if(records[0].approver_two_id == UserId) {
+                } else if(records[0].approver_two == UserId) {
                     data.approval_two_status = isApproved == 1 ? true : false
-                } else if(records[0].approver_three_id == UserId) {
+                } else if(records[0].approver_three== UserId) {
                     data.approval_three_status = isApproved == 1 ? true : false
                 } else {
                     res.status(404).send({

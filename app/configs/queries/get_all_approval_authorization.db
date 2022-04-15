@@ -1,0 +1,16 @@
+ SELECT
+    "ApprovalAuthorization".id,
+    "Role".id AS role_id,
+    "Role".name AS role_name,
+    "ApprovalTemplate".name AS approval_template_id,
+    "ApprovalTemplate".name AS approval_template_name,
+    approver_one.full_name AS approver_one_name,
+    approver_two.full_name AS approver_two_name,
+    approver_three.full_name AS approver_three_name
+   FROM "ApprovalAuthorization"
+     LEFT JOIN "Role" ON "Role".id = "ApprovalAuthorization"."RoleId"
+     LEFT JOIN "ApprovalTemplate" ON "ApprovalAuthorization"."ApprovalTemplateId" = "ApprovalTemplate".id
+     LEFT JOIN "User" approver_one ON approver_one.id = "ApprovalTemplate".approver_one
+     LEFT JOIN "User" approver_two ON approver_two.id = "ApprovalTemplate".approver_two
+     LEFT JOIN "User" approver_three ON approver_three.id = "ApprovalTemplate".approver_three
+  WHERE "ApprovalAuthorization".deleted_at IS NULL;

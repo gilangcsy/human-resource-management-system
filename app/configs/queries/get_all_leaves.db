@@ -4,12 +4,24 @@
     requester.employee_id AS requester_emp_id,
     "Leave".leave_start_date AS start_date,
     "Leave".leave_end_date AS end_date,
-    "Leave".approval_one_status,
-    "Leave".approval_two_status,
-    "Leave".approval_three_status,
+        CASE
+            WHEN "Leave".approval_one_status = false THEN 'Rejected'::text
+            WHEN "Leave".approval_one_status IS NULL THEN 'Waiting for Validation'::text
+            ELSE 'Rejected'::text
+        END AS approval_one_status,
+        CASE
+            WHEN "Leave".approval_two_status = false THEN 'Rejected'::text
+            WHEN "Leave".approval_two_status IS NULL THEN 'Waiting for Validation'::text
+            ELSE 'Rejected'::text
+        END AS approval_two_status,
+        CASE
+            WHEN "Leave".approval_three_status = false THEN 'Rejected'::text
+            WHEN "Leave".approval_three_status IS NULL THEN 'Waiting for Validation'::text
+            ELSE 'Rejected'::text
+        END AS approval_three_status,
     "Leave".description,
     "Leave".attachment,
-	"Leave"."LeaveTypeId",
+    "Leave"."LeaveTypeId",
     "ApprovalTemplate".approver_one,
     "ApprovalTemplate".approver_two,
     "ApprovalTemplate".approver_three,
@@ -23,7 +35,7 @@
             ELSE NULL::integer
         END AS approver_now,
         CASE
-            WHEN "ApprovalTemplate".approver_three IS NOT NULL THEN
+            WHEN approver_three.full_name IS NOT NULL THEN
             CASE
                 WHEN "Leave".approval_one_status = false THEN 'Rejected'::text
                 WHEN "Leave".approval_one_status IS NULL THEN 'Waiting for Validation'::text
@@ -60,8 +72,8 @@
    FROM "Leave"
      LEFT JOIN "User" requester ON requester.id = "Leave"."UserId"
      LEFT JOIN "Role" ON "Role".id = requester."RoleId"
-     LEFT JOIN "LeaveType" ON "LeaveType"."id" = "Leave"."LeaveTypeId"
-     LEFT JOIN "ApprovalAuthorization" ON "Role".id = "ApprovalAuthorization".role_id
+     LEFT JOIN "LeaveType" ON "LeaveType".id = "Leave"."LeaveTypeId"
+     LEFT JOIN "ApprovalAuthorization" ON "Role".id = "ApprovalAuthorization"."RoleId"
      LEFT JOIN "ApprovalTemplate" ON "ApprovalAuthorization"."ApprovalTemplateId" = "ApprovalTemplate".id
      LEFT JOIN "User" approver_one ON approver_one.id = "ApprovalTemplate".approver_one
      LEFT JOIN "User" approver_two ON approver_two.id = "ApprovalTemplate".approver_two

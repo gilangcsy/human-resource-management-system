@@ -181,7 +181,7 @@ module.exports = {
                 include: [
                     {
                         model: User,
-                        attributes: ['id', 'employeeId', 'full_name'],
+                        attributes: ['id', 'employee_id', 'full_name'],
                         where: {
                             deletedAt: null
                         },
@@ -191,6 +191,8 @@ module.exports = {
                     ['clockIn', 'ASC']
                 ]
             })
+
+            console.log(attendance)
 
             if (attendance) {
                 res.status(200).send({

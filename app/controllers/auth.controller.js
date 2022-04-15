@@ -267,7 +267,13 @@ module.exports = {
                 where: {
                     email: email
                 },
-                attributes: ['id', 'email', 'employee_id', 'isActive', 'isVerified', 'password', 'full_name']
+                attributes: ['id', 'email', 'employee_id', 'isActive', 'isVerified', 'password', 'full_name'],
+                include: [
+                    {
+                        model: db.role,
+                        attributes: ['id', 'name']
+                    },
+                ]
             })
             console.log(userData)
             if (userData) {
@@ -309,6 +315,7 @@ module.exports = {
                             email: userData.email,
                             employee_id: userData.employee_id,
                             full_name: userData.full_name,
+                            role: userData.Role.name
                         }
                     })
                 } else {
