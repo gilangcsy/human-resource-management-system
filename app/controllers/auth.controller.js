@@ -315,7 +315,8 @@ module.exports = {
                             email: userData.email,
                             employee_id: userData.employee_id,
                             full_name: userData.full_name,
-                            role: userData.Role.name
+                            role: userData.Role.name,
+                            role_id: userData.Role.id
                         }
                     })
                 } else {

@@ -36,6 +36,8 @@ db.approvalTemplate = require('./approvalTemplate.model')(sequelize, Sequelize)
 db.approvalAuthorization = require('./approvalAuthorization.model')(sequelize, Sequelize)
 db.leave = require('./leave.model')(sequelize, Sequelize)
 db.role = require('./role.model')(sequelize, Sequelize)
+db.menu = require('./menu.model')(sequelize, Sequelize)
+db.roleMenu = require('./roleMenu.model')(sequelize, Sequelize)
 
 db.user.hasMany(db.userInvitation)
 db.userInvitation.belongsTo(db.user)
@@ -60,5 +62,11 @@ db.leave.belongsTo(db.user)
 
 db.leaveType.hasMany(db.leave)
 db.leave.belongsTo(db.leaveType)
+
+db.role.hasMany(db.roleMenu)
+db.roleMenu.belongsTo(db.role)
+
+db.menu.hasMany(db.roleMenu)
+db.roleMenu.belongsTo(db.menu)
 
 module.exports = db;

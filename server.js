@@ -4,7 +4,7 @@ const cors = require('cors')
 // const fileUpload = require('express-fileupload');
 
 //Inisiasi port yang akan dipakai
-const PORT = 3000;
+const PORT = process.env.PORT || 3068;
 
 //Memanggil model
 const db = require('./app/models/index.model');
@@ -43,6 +43,8 @@ require('./app/routes/approvalTemplate.routes')(app)
 require('./app/routes/leave.routes')(app)
 require('./app/routes/role.routes')(app)
 require('./app/routes/approvalAuthorization.routes')(app)
+require('./app/routes/roleMenu.routes')(app)
+require('./app/routes/menu.routes')(app)
 
 app.listen(PORT, () => {
     console.log(`Server is running on PORT ${PORT}`);

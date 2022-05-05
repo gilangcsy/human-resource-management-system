@@ -1,0 +1,18 @@
+SELECT
+	"Role".id as role_id,
+	"Role".name as role_name,
+	"Menu".id as menu_id,
+	"Menu".name as menu_name,
+	"Menu".url,
+	"Menu".icon,
+	"Role Menu".allow_create,
+	"Role Menu".allow_read,
+	"Role Menu".allow_update,
+	"Role Menu".allow_delete
+FROM "Role Menu"
+	LEFT JOIN "Role" ON "Role".id = "Role Menu"."RoleId"
+	LEFT JOIN "Menu" ON "Menu".id = "Role Menu"."MenuId"
+WHERE "Role Menu"."deletedAt" IS NULL
+	AND "Menu".is_active = TRUE
+	AND "Menu"."deletedAt" IS NULL
+	AND "Role"."deletedAt" IS NULL
