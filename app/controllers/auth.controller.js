@@ -53,13 +53,15 @@ module.exports = {
                             user: mail.EMAIL,
                             pass: mail.PASSWORD
                         }
-                    });
+                    })
+                    
+                    let url = req.headers.host == 'localhost:3068' ? 'http://127.0.0.1:8000' : 'https://intranet.ids.co.id'
 
                     let message = {
                         from: "noreply.csy@yahoo.com",
                         to: invitingUser.email,
                         subject: "Invitational - IDS Intranet",
-                        html: `<p>Hello! We'd like to invite you to our apps. If you want to join, please click button below. Thanks!</p> <br> <a href='http://127.0.0.1:8000/auth/invitational/${token}' target='_blank'>Accept Now</a>`,
+                        html: `<p>Hello! We'd like to invite you to our apps. If you want to join, please click button below. Thanks!</p> <br> <a href='${url}/auth/invitational/${token}' target='_blank'>Accept Now</a>`,
                         // attachments: [
                         //     {
                         //         filename: 'onlinewebtutor.png',
