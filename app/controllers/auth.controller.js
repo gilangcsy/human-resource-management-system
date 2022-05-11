@@ -19,7 +19,7 @@ module.exports = {
     async invite(req, res, next) {
         try {
             let created_at = new Date()
-            const { email, invitedBy } = req.body
+            const { email, invitedBy, full_name, RoleId, employee_id, address } = req.body
             const expiredDate = new Date(created_at.getFullYear(), created_at.getMonth(), created_at.getDate() + parseInt('2'), created_at.getHours(), created_at.getMinutes(), created_at.getSeconds())
             const token = randtoken.generate(64)
 
@@ -47,7 +47,8 @@ module.exports = {
                         invitedBy: invitedBy
                     })
                     let transporter = nodemailer.createTransport({
-                        service: 'gmail',
+                        host: 'smtp.mail.yahoo.com',
+                        port: 465,
                         auth: {
                             user: mail.EMAIL,
                             pass: mail.PASSWORD
@@ -55,7 +56,7 @@ module.exports = {
                     });
 
                     let message = {
-                        from: "noreplyjustread8@gmail.com",
+                        from: "noreply.csy@yahoo.com",
                         to: invitingUser.email,
                         subject: "Invitational - IDS Intranet",
                         html: `<p>Hello! We'd like to invite you to our apps. If you want to join, please click button below. Thanks!</p> <br> <a href='http://127.0.0.1:8000/auth/invitational/${token}' target='_blank'>Accept Now</a>`,
