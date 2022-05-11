@@ -53,9 +53,9 @@ module.exports = {
                             user: mail.EMAIL,
                             pass: mail.PASSWORD
                         },
-		tls: { 
-    rejectUnauthorized: false 
-}
+                        tls: { 
+                            rejectUnauthorized: false 
+                        }
                     })
                     
                     let url = req.headers.host == 'localhost:3068' ? 'http://127.0.0.1:8000' : 'https://intranet.ids.co.id'
@@ -94,40 +94,54 @@ module.exports = {
                             message: 'This account already registered.'
                         })
                     } else {
-                        let message = {
-                            from: "noreplyjustread8@gmail.com",
-                            to: userData.email,
-                            subject: "Invitational - IDS Intranet",
-                            html: `<p>Hello! We'd like to invite you to our apps. If you want to join, please click button below. Thanks!</p> <br> <a href='http://127.0.0.1:8000/auth/invitational/${token}' target='_blank'>Accept Now</a>`,
-                        }
-
                         let transporter = nodemailer.createTransport({
-                            service: 'gmail',
+                            host: 'smtp.mail.yahoo.com',
+                            port: 587,
                             auth: {
                                 user: mail.EMAIL,
                                 pass: mail.PASSWORD
-                            }
-                        });
-    
-                        transporter.sendMail(message, function (err, info) {
-                            if (err) {
-                                console.log(err)
-                            } else {
-                                console.log(info)
+                            },
+                            tls: { 
+                                rejectUnauthorized: false 
                             }
                         })
                         
+                        let url = req.headers.host == 'localhost:3068' ? 'http://127.0.0.1:8000' : 'https://intranet.ids.co.id'
+    
+                        let message = {
+                            from: "noreply.csy@yahoo.com",
+                            to: invitingUser.email,
+                            subject: "Invitational - IDS Intranet",
+                            html: `<p>Hello! We'd like to invite you to our apps. If you want to join, please click button below. Thanks!</p> <br> <a href='${url}/auth/invitational/${token}' target='_blank'>Accept Now</a>`,
+                            // attachments: [
+                            //     {
+                            //         filename: 'onlinewebtutor.png',
+                            //         path: __dirname + '/onlinewebtutor.png',
+                            //         cid: 'uniq-onlinewebtutor.png'
+                            //     }
+                            // ]
+                        }
+    
                         const invitingConfirmation = await UserInvitation.create({
                             UserId: userData.id,
                             expiredDate: expiredDate,
                             token: token,
                             invitedBy: invitedBy
                         })
-                        res.status(201).json({
-                            success: true,
-                            message: 'succesfully inviting user',
-                            data: invitingConfirmation
+
+                        transporter.sendMail(message, function (err, info) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                console.log(info);
+                                res.status(201).json({
+                                    success: true,
+                                    message: 'succesfully re-create token.',
+                                    invitingData: invitingConfirmation
+                                })
+                            }
                         })
+                        
 
                     }
                 }
