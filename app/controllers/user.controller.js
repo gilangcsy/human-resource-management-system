@@ -1,5 +1,6 @@
 const db = require('../models/index.model')
 const User = db.user
+const Role = db.role
 const Attendance = db.attendance
 
 const bcrypt = require("bcrypt");
@@ -54,7 +55,7 @@ module.exports = {
                 success: true,
                 message: "Get All User Has Been Successfully.",
                 data: userData
-            });
+            })
         }
         catch (err) {
             next(err)
@@ -69,7 +70,13 @@ module.exports = {
                     id: id,
                     deletedAt: null
                 },
-                attributes: ['id', 'employeeId', 'full_name', 'email', 'address']
+                attributes: ['id', 'employee_id', 'full_name', 'email', 'address', 'RoleId'],
+                include: [
+                    {
+                        model: Role,
+                        attributes: ['id', 'name']
+                    },
+                ]
             })
 
             if (userData) {
@@ -152,7 +159,7 @@ module.exports = {
 
     async update(req, res, next) {
         try {
-            const { employeeId, full_name, address, avatar } = req.body
+            const { empoloyee_id, full_name, address, RoleId } = req.body
             const { id } = req.params
 
             let userUpdate = {}
@@ -167,55 +174,22 @@ module.exports = {
             })
 
             if(userData) {
-                if (req.files) {
-                    let upload = multer({ storage: storage }).single('avatar')
-                    upload(req, res, function (err) {
-                        if (err) {
-                            res.send({
-                                success: false,
-                                message: 'Error uploading file.'
-                            })
-                        }
-                        userUpdate = {
-                            employeeId: employeeId,
-                            full_name: full_name,
-                            address: address,
-                            avatar:req.files.avatar.name
-                        }
-                    })
-                } else {
-                    let upload = multer({ storage: storage }).single('avatar')
-                    upload(req, res, function (err) {
-                        if (err) {
-                            res.send({
-                                success: false,
-                                message: 'Error uploading file.'
-                            })
-                        }
-                        userUpdate = {
-                            employeeId: employeeId,
-                            full_name: full_name,
-                            address: address,
-                            avatar:req.files.avatar.name
-                        }
-                    })
-                    userUpdate = {
-                        employeeId: employeeId,
-                        full_name: full_name,
-                        address: address
-                    }
+                let userUpdate = {
+                    empoloyee_id: empoloyee_id,
+                    full_name: full_name,
+                    address: address,
+                    RoleId: RoleId
                 }
-                // const updateUser = await User.update(userUpdate, {
-                //     where: {
-                //         id: id
-                //     }
-                // })
+                const updateUser = await User.update(userUpdate, {
+                    where: {
+                        id: id
+                    }
+                })
 
-                // res.status(200).json({
-                //     success: true,
-                //     message: 'User has been updated.',
-                //     data: userUpdate
-                // })
+                res.status(200).json({
+                    success: true,
+                    message: 'User has been updated.'
+                })
             }
 
         }
