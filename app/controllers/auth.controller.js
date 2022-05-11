@@ -110,7 +110,7 @@ module.exports = {
     
                         let message = {
                             from: "noreply.csy@yahoo.com",
-                            to: invitingUser.email,
+                            to: userData.email,
                             subject: "Invitational - IDS Intranet",
                             html: `<p>Hello! We'd like to invite you to our apps. If you want to join, please click button below. Thanks!</p> <br> <a href='${url}/auth/invitational/${token}' target='_blank'>Accept Now</a>`,
                             // attachments: [
