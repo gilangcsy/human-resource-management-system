@@ -48,11 +48,14 @@ module.exports = {
                     })
                     let transporter = nodemailer.createTransport({
                         host: 'smtp.mail.yahoo.com',
-                        port: 465,
+                        port: 587,
                         auth: {
                             user: mail.EMAIL,
                             pass: mail.PASSWORD
-                        }
+                        },
+		tls: { 
+    rejectUnauthorized: false 
+}
                     })
                     
                     let url = req.headers.host == 'localhost:3068' ? 'http://127.0.0.1:8000' : 'https://intranet.ids.co.id'
