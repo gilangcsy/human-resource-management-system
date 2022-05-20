@@ -1,6 +1,6 @@
 module.exports = {
     EMAIL: 'noreply.csy@yahoo.com',
-    PASSWORD: 'bprpoivuiairjhzr',
+    PASSWORD: 'hxskshbvaenqdhjc',
 
     // development  : bprpoivuiairjhzr
     // prod         : hxskshbvaenqdhjc
