@@ -159,7 +159,7 @@ module.exports = {
 
     async update(req, res, next) {
         try {
-            const { empoloyee_id, full_name, address, RoleId } = req.body
+            const { employee_id, full_name, address, RoleId } = req.body
             const { id } = req.params
 
             let userUpdate = {}
@@ -175,7 +175,7 @@ module.exports = {
 
             if(userData) {
                 let userUpdate = {
-                    empoloyee_id: empoloyee_id,
+                    employee_id: employee_id,
                     full_name: full_name,
                     address: address,
                     RoleId: RoleId
