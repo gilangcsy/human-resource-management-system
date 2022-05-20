@@ -14,7 +14,7 @@ module.exports = {
                 attributes: ['id', 'name', 'icon', 'url', 'is_active', 'master_menu'],
                 order: [
                     ['master_menu', 'ASC'],
-                    ['position_number', 'ASC']
+                    // ['position_number', 'ASC']
                 ]
             })
 
@@ -220,7 +220,7 @@ module.exports = {
                     is_active: true,
                     master_menu: 0
                 },
-                attributes: ['id', 'name'],
+                attributes: ['id', 'name', 'url', 'icon', 'position_number'],
                 order: [
                     ['position_number', 'ASC']
                 ]
@@ -259,8 +259,8 @@ module.exports = {
             const { positions, updatedBy } = req.body
 
             positions.forEach((index) => {
-                console.log(index[0])
                 let data = {
+                    master_menu: index[2],
                     position_number: index[1],
                     updatedBy: updatedBy,
                     updatedAt: new Date()

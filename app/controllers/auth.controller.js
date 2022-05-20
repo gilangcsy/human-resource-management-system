@@ -315,16 +315,16 @@ module.exports = {
                         expiresIn: 10800 // 24 hours
                     })
 
-                    const userLog = await UserLog.create({
-                        UserId: userData.id,
-                        token: tokenJwt,
-                        longitude: longitude,
-                        latitude: latitude,
-                        address: address,
-                        device: device,
-                        detail: detail,
-                        isLogin: true
-                    })
+                    // const userLog = await UserLog.create({
+                    //     UserId: userData.id,
+                    //     token: tokenJwt,
+                    //     longitude: longitude,
+                    //     latitude: latitude,
+                    //     address: address,
+                    //     device: device,
+                    //     detail: detail,
+                    //     isLogin: true
+                    // })
 
                     res.status(201).json({
                         success: true,

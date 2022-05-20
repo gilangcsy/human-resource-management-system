@@ -24,9 +24,9 @@ module.exports = {
     async readByRoleId(req, res, next) {
         try {
             const { role_id } = req.params
-            const records = await sequelize.query('SELECT * FROM get_all_access_rights WHERE role_id = $1 AND allow_read = $2', {
+            const records = await sequelize.query('SELECT * FROM get_all_access_rights WHERE role_id = $1', {
                 type: QueryTypes.SELECT,
-                bind: [role_id, true]
+                bind: [role_id]
             })
 
             res.status(200).send({
@@ -79,7 +79,7 @@ module.exports = {
 
             res.status(200).send({
                 success: true,
-                message: "Create New Role Menu Has Been Successfully.",
+                message: "Create New Access Rights Has Been Successfully.",
                 data: data
             })
         }

@@ -47,7 +47,7 @@ module.exports = {
                 },
                 attributes: ['id', 'full_name', 'email', 'isActive', 'isVerified', 'RoleId'],
                 order: [
-                    ['createdAt', 'ASC']
+                    ['full_name', 'ASC']
                 ]
             })
 
