@@ -1,5 +1,5 @@
 const db = require('../models/index.model');
-const Leave = db.leave
+const Claim = db.claim
 const sequelize = db.sequelize
 const dbConfig = require('../configs/db.config')
 const fs = require('fs');
@@ -9,7 +9,7 @@ const multer = require('multer');
 const { QueryTypes } = require('sequelize');
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './storage/attachment/leaves')
+        cb(null, './storage/attachment/claims')
     },
     filename: function (req, file, cb) {
         let extArray = file.mimetype.split("/");
@@ -42,12 +42,12 @@ module.exports = {
         try {
             const { id } = req.query;
             let query = `
-                SELECT * FROM get_all_leaves
+                SELECT * FROM get_all_claims
                 `
             const [results, metadata] = await db.sequelize.query(query)
             res.status(200).send({
                 success: true,
-                message: "Get All Leaves Has Been Successfully.",
+                message: "Get All Claims Has Been Successfully.",
                 data: results
             })
         }
@@ -60,13 +60,13 @@ module.exports = {
         try {
             const { id } = req.params
 
-            const records = await sequelize.query('SELECT * FROM get_all_leaves WHERE id = $1', {
+            const records = await sequelize.query('SELECT * FROM get_all_claims WHERE id = $1', {
                 type: QueryTypes.SELECT,
                 bind: [id]
             })
             res.status(200).send({
                 success: true,
-                message: "Get Leave By Id Has Been Successfully.",
+                message: "Get Claim By Id Has Been Successfully.",
                 data: records
             })
         }
@@ -78,25 +78,25 @@ module.exports = {
     async create(req, res, next) {
         try {
             let attachment_name = null
-            const { start_date, end_date, description, attachment, created_by, UserId, LeaveTypeId } = req.body
+            const { start_date, end_date, description, attachment, created_by, UserId, ClaimTypeId } = req.body
             if(req.file) {
                 attachment_name = req.file.filename
             }
             let data = {
-                leave_start_date: start_date,
-                leave_end_date: end_date,
+                claim_start_date: start_date,
+                claim_end_date: end_date,
                 description: description,
                 attachment: attachment_name,
                 created_by: created_by,
                 UserId: UserId,
-                LeaveTypeId: LeaveTypeId,
+                ClaimTypeId: ClaimTypeId,
             }
 
-            const createLeave = await Leave.create(data)
+            const createClaim = await Claim.create(data)
 
             res.status(201).json({
                 success: true,
-                message: 'Succesfully applied for Leave.',
+                message: 'Succesfully applied for Claim.',
                 data: data
             })
         }
@@ -109,13 +109,13 @@ module.exports = {
         try {
             const { id } = req.params
 
-            const records = await sequelize.query('SELECT * FROM get_all_leaves WHERE requester_id = $1', {
+            const records = await sequelize.query('SELECT * FROM get_all_claims WHERE requester_id = $1', {
                 type: QueryTypes.SELECT,
                 bind: [id]
             })
             res.status(200).send({
                 success: true,
-                message: "Get All Leave By User Id Has Been Successfully.",
+                message: "Get All Claim By User Id Has Been Successfully.",
                 data: records
             })
         }
@@ -128,10 +128,10 @@ module.exports = {
         let data = {}
         let attachment
         const { id } = req.params
-        const { start_date, end_date, description, created_by, updated_by, UserId, LeaveTypeId } = req.body
+        const { start_date, end_date, description, created_by, updated_by, UserId, ClaimTypeId } = req.body
         
         
-        const records = await sequelize.query('SELECT * FROM get_all_leaves WHERE id = $1', {
+        const records = await sequelize.query('SELECT * FROM get_all_claims WHERE id = $1', {
             type: QueryTypes.SELECT,
             bind: [id]
         })
@@ -141,7 +141,7 @@ module.exports = {
                 attachment_name = req.file.filename
 
                 if(attachment_name) {
-                    const path = process.cwd() + '/storage/attachment/leaves/' + records[0].attachment
+                    const path = process.cwd() + '/storage/attachment/claims/' + records[0].attachment
                     fs.unlink(path, (err) => {
                         if (err) {
                             console.error(err)
@@ -150,27 +150,27 @@ module.exports = {
                     })
                 }
                 data = {
-                    leave_start_date: end_date,
-                    leave_end_date: start_date,
+                    claim_start_date: end_date,
+                    claim_end_date: start_date,
                     description: description,
                     attachment: attachment_name,
                     created_by: created_by,
                     updated_by: updated_by,
                     UserId: UserId,
-                    LeaveTypeId: LeaveTypeId,
+                    ClaimTypeId: ClaimTypeId,
                 }
             } else {
                 data = {
-                    leave_start_date: start_date,
-                    leave_end_date: end_date,
+                    claim_start_date: start_date,
+                    claim_end_date: end_date,
                     description: description,
                     created_by: created_by,
                     updated_by: updated_by,
                     UserId: UserId,
-                    LeaveTypeId: LeaveTypeId,
+                    ClaimTypeId: ClaimTypeId,
                 }
             }
-            const update = await Leave.update(data, {
+            const update = await Claim.update(data, {
                 where: {
                     id: id
                 }
@@ -178,12 +178,12 @@ module.exports = {
             
             res.status(200).send({
                 success: true,
-                message: 'Succesfully updating leave application'
+                message: 'Succesfully updating claim application'
             })
         } else {
             res.status(404).json({
                 success: false,
-                message: 'Update leave application has been failed. Id not found.'
+                message: 'Update claim application has been failed. Id not found.'
             })
         }
         
@@ -194,7 +194,7 @@ module.exports = {
             const { id } = req.params
             const { deleted_by } = req.body
 
-            const data = await Leave.findOne({
+            const data = await Claim.findOne({
                 where: {
                     id: id
                 },
@@ -202,7 +202,7 @@ module.exports = {
             })
 
             if (data) {
-                const deleteData = await Leave.update({
+                const deleteData = await Claim.update({
                     deleted_at: new Date(),
                     deleted_by: deleted_by
                 }, {
@@ -212,12 +212,12 @@ module.exports = {
                 })
                 res.status(200).json({
                     success: true,
-                    message: 'Deleting leave application has been successfully.'
+                    message: 'Deleting claim application has been successfully.'
                 })
             } else {
                 res.status(404).json({
                     success: false,
-                    message: 'Delete leave application has been failed. Id not found.'
+                    message: 'Delete claim application has been failed. Id not found.'
                 })
             }
 
@@ -231,19 +231,19 @@ module.exports = {
         try {
             const { id } = req.params
 
-            const activeApproval = await sequelize.query('SELECT * FROM get_all_leaves WHERE approver_now = $1', {
+            const activeApproval = await sequelize.query('SELECT * FROM get_all_claims WHERE approver_now = $1', {
                 type: QueryTypes.SELECT,
                 bind: [id]
             })
 
-            const historyApproval = await sequelize.query('SELECT * FROM get_all_leaves WHERE approver_one = $1 OR approver_two = $1 OR approver_three= $1', {
+            const historyApproval = await sequelize.query('SELECT * FROM get_all_claims WHERE approver_one = $1 OR approver_two = $1 OR approver_three = $1', {
                 type: QueryTypes.SELECT,
                 bind: [id]
             })
 
             res.status(200).send({
                 success: true,
-                message: 'Get Leaves By Approver Now Id Has Been Successfully.',
+                message: 'Get Claims By Approver Now Id Has Been Successfully.',
                 data: activeApproval,
                 history: historyApproval
             })
@@ -256,7 +256,7 @@ module.exports = {
         try {
             const { UserId, id, isApproved } = req.body
 
-            const records = await sequelize.query('SELECT * FROM get_all_leaves WHERE id = $1 LIMIT 1', {
+            const records = await sequelize.query('SELECT * FROM get_all_claims WHERE id = $1 LIMIT 1', {
                 type: QueryTypes.SELECT,
                 bind: [id]
             })
@@ -273,7 +273,7 @@ module.exports = {
                 } else {
                     res.status(404).send({
                         success: false,
-                        message: 'You dont have authorization to approve leave application.'
+                        message: 'You dont have authorization to approve claim application.'
                     })
                 }
 
@@ -281,7 +281,7 @@ module.exports = {
                 data.updated_by = UserId
                 data.updated_at = new Date()
 
-                const update = await Leave.update(data, {
+                const update = await Claim.update(data, {
                     where: {
                         id: id
                     }
@@ -289,7 +289,7 @@ module.exports = {
 
                 res.status(200).send({
                     success: true,
-                    message: `Succesfully ${data.approval_three_status = isApproved == 1 ? 'approving' : 'rejecting'} leave application`
+                    message: `Succesfully ${data.approval_three_status = isApproved == 1 ? 'approving' : 'rejecting'} claim application`
                 })
             }
         } catch (err) {
@@ -300,7 +300,7 @@ module.exports = {
     async download(req, res, next) {
         try {
             const attachment = req.params.attachment
-            let doc_path = ('./storage/attachment/leaves/' + attachment)
+            let doc_path = ('./storage/attachment/claims/' + attachment)
 
             res.download(doc_path)
         } catch (err) {

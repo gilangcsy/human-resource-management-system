@@ -35,6 +35,7 @@ db.claimType = require('./claimType.model')(sequelize, Sequelize)
 db.approvalTemplate = require('./approvalTemplate.model')(sequelize, Sequelize)
 db.approvalAuthorization = require('./approvalAuthorization.model')(sequelize, Sequelize)
 db.leave = require('./leave.model')(sequelize, Sequelize)
+db.claim = require('./claim.model')(sequelize, Sequelize)
 db.role = require('./role.model')(sequelize, Sequelize)
 db.menu = require('./menu.model')(sequelize, Sequelize)
 db.roleMenu = require('./roleMenu.model')(sequelize, Sequelize)
@@ -68,5 +69,11 @@ db.roleMenu.belongsTo(db.role)
 
 db.menu.hasMany(db.roleMenu)
 db.roleMenu.belongsTo(db.menu)
+
+db.user.hasMany(db.claim)
+db.claim.belongsTo(db.user)
+
+db.claimType.hasMany(db.claim)
+db.claim.belongsTo(db.claimType)
 
 module.exports = db;
