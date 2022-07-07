@@ -77,26 +77,31 @@ module.exports = {
 
     async create(req, res, next) {
         try {
-            let attachment_name = null
             const { start_date, end_date, description, attachment, created_by, UserId, ClaimTypeId } = req.body
-            if(req.file) {
-                attachment_name = req.file.filename
-            }
+
             let data = {
                 claim_start_date: start_date,
                 claim_end_date: end_date,
                 description: description,
-                attachment: attachment_name,
                 created_by: created_by,
                 UserId: UserId,
                 ClaimTypeId: ClaimTypeId,
+            }
+
+            if(req.files) {
+                let attachment = req.files
+                let filePdf = []
+                attachment.forEach((item) => {
+                    filePdf.push(item.filename)
+                })
+                data.attachment = filePdf
             }
 
             const createClaim = await Claim.create(data)
 
             res.status(201).json({
                 success: true,
-                message: 'Succesfully applied for Claim.',
+                message: 'Successfully applying Claim.',
                 data: data
             })
         }
@@ -303,6 +308,94 @@ module.exports = {
             let doc_path = ('./storage/attachment/claims/' + attachment)
 
             res.download(doc_path)
+        } catch (err) {
+            next(err)
+        }
+    },
+
+    async removeAttachment(req, res, next) {
+        try {
+            const { attachment, claimId } = req.body
+            const claim = await Claim.findByPk(claimId)
+
+            if(claim) {
+                let oldAttachment = claim.attachment
+                let newAttachment = []
+                
+                oldAttachment.forEach((item) => {
+                    if(item != attachment) {
+                        newAttachment.push(item)
+                    } else {
+                        const path = process.cwd() + '/storage/attachment/claims/' + item
+                        if (fs.existsSync(path)) {
+                            //file exists
+                            fs.unlink(path, (err) => {
+                                if (err) {
+                                    console.error(err)
+                                    return
+                                }
+                            })
+                        }
+                    }
+                })
+    
+                data = {
+                    attachment: newAttachment
+                }
+                
+                const update = await Claim.update(data, {
+                    where: {
+                        id: claimId
+                    }
+                })
+                
+                res.status(200).send({
+                    success: true,
+                    message: 'Succesfully removing attachment in claim application.'
+                })
+            } else {
+                res.status(404).send({
+                    success: false,
+                    message: 'ID not found.'
+                })
+            }
+        } catch (err) {
+            next(err)
+        }
+    },
+
+    async getCountAllStatus(req, res, next) {
+        try {
+            const { userId } = req.query
+            let records
+            if(userId) {
+                records = await sequelize.query('SELECT last_status FROM get_all_claims WHERE requester_id = $1', {
+                    type: QueryTypes.SELECT,
+                    bind: [userId]
+                })
+            } else {
+                records = await sequelize.query('SELECT last_status FROM get_all_claims', {
+                    type: QueryTypes.SELECT
+                })
+            }
+
+            let waiting = 0, approved = 0, rejected = 0
+
+            records.forEach((item) => {
+                waiting = item.last_status == 'Waiting for Validation' ? waiting + 1 : waiting + 0
+                approved = item.last_status == 'Approved' ? approved + 1 : approved + 0
+                rejected = item.last_status == 'Rejected' ? rejected + 1 : rejected + 0
+            })
+
+            res.status(200).send({
+                success: true,
+                message: 'Get count all status has been successful.',
+                data: {
+                    waiting: waiting,
+                    approved: approved,
+                    rejected: rejected
+                }
+            })
         } catch (err) {
             next(err)
         }

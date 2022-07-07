@@ -6,6 +6,7 @@ module.exports = app => {
 
 	let router = require('express').Router();
 	
+	router.get('/', controller.readAllTodayAttendance);
 	router.get('/readByUserId/:id', controller.readByUserId);
 	router.get('/readById/:id', controller.readById);
 	router.get('/readTodayAttendance/:id', verifyUser.checkIfUserExists, controller.readTodayAttendance);

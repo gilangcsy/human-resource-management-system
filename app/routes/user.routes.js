@@ -10,6 +10,7 @@ module.exports = app => {
 	router.delete('/:id/:deletedBy', controller.delete);
 	router.get('/setActive/:id', controller.setActive);
 	router.get('/:id', controller.readById);
+	router.get('/genderAndRole/count', controller.readGenderAndRoleCount);
 	router.patch('/:id', controller.uploadImg.single('avatar'), controller.update);
 	router.post('/', controller.create);
 

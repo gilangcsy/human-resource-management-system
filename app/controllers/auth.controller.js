@@ -19,7 +19,7 @@ module.exports = {
     async invite(req, res, next) {
         try {
             let created_at = new Date()
-            const { email, invitedBy, full_name, RoleId, employee_id, address } = req.body
+            const { email, invitedBy } = req.body
             const expiredDate = new Date(created_at.getFullYear(), created_at.getMonth(), created_at.getDate() + parseInt('2'), created_at.getHours(), created_at.getMinutes(), created_at.getSeconds())
             const token = randtoken.generate(64)
 
@@ -314,17 +314,6 @@ module.exports = {
                     const tokenJwt = jwt.sign({ id: userData.id }, config.secret, {
                         expiresIn: 10800 // 24 hours
                     })
-
-                    // const userLog = await UserLog.create({
-                    //     UserId: userData.id,
-                    //     token: tokenJwt,
-                    //     longitude: longitude,
-                    //     latitude: latitude,
-                    //     address: address,
-                    //     device: device,
-                    //     detail: detail,
-                    //     isLogin: true
-                    // })
 
                     res.status(201).json({
                         success: true,

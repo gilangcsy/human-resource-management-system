@@ -77,26 +77,32 @@ module.exports = {
 
     async create(req, res, next) {
         try {
-            let attachment_name = null
-            const { start_date, end_date, description, attachment, created_by, UserId, LeaveTypeId } = req.body
-            if(req.file) {
-                attachment_name = req.file.filename
-            }
+            const { start_date, end_date, description, created_by, UserId, LeaveTypeId } = req.body
+            
             let data = {
                 leave_start_date: start_date,
                 leave_end_date: end_date,
                 description: description,
-                attachment: attachment_name,
                 created_by: created_by,
                 UserId: UserId,
                 LeaveTypeId: LeaveTypeId,
+            }
+
+            if(req.files) {
+                let attachment = req.files
+                let filePdf = []
+                attachment.forEach((item, index) => {
+                    filePdf.push(item.filename)
+                })
+
+                data.attachment = filePdf
             }
 
             const createLeave = await Leave.create(data)
 
             res.status(201).json({
                 success: true,
-                message: 'Succesfully applied for Leave.',
+                message: 'Successfully applying leave.',
                 data: data
             })
         }
@@ -108,16 +114,28 @@ module.exports = {
     async readByUserId(req, res, next) {
         try {
             const { id } = req.params
+            const { status } = req.query
 
-            const records = await sequelize.query('SELECT * FROM get_all_leaves WHERE requester_id = $1', {
-                type: QueryTypes.SELECT,
-                bind: [id]
-            })
+            let records
+
+            if(status) {
+                records = await sequelize.query('SELECT * FROM get_all_leaves WHERE requester_id = $1 AND last_status = $2', {
+                    type: QueryTypes.SELECT,
+                    bind: [id, status]
+                })
+            } else {
+                records = await sequelize.query('SELECT * FROM get_all_leaves WHERE requester_id = $1', {
+                    type: QueryTypes.SELECT,
+                    bind: [id]
+                })
+            }
+            
             res.status(200).send({
                 success: true,
                 message: "Get All Leave By User Id Has Been Successfully.",
                 data: records
             })
+
         }
         catch (err) {
             next(err)
@@ -125,68 +143,53 @@ module.exports = {
     },
 
     async update(req, res, next) {
-        let data = {}
-        let attachment
-        const { id } = req.params
-        const { start_date, end_date, description, created_by, updated_by, UserId, LeaveTypeId } = req.body
-        
-        
-        const records = await sequelize.query('SELECT * FROM get_all_leaves WHERE id = $1', {
-            type: QueryTypes.SELECT,
-            bind: [id]
-        })
-        
-        if(records[0] != null) {
-            if(req.file) {
-                attachment_name = req.file.filename
-
-                if(attachment_name) {
-                    const path = process.cwd() + '/storage/attachment/leaves/' + records[0].attachment
-                    fs.unlink(path, (err) => {
-                        if (err) {
-                            console.error(err)
-                            return
-                        }
-                    })
-                }
+        try {
+            let data = {}
+            let attachment
+            const { id } = req.params
+            const { start_date, end_date, description, created_by, updated_by, UserId, LeaveTypeId } = req.body
+            
+            const leave = await Leave.findByPk(id)
+            let existsAttachment = leave.attachment || []
+    
+            if(leave) {
                 data = {
                     leave_start_date: end_date,
                     leave_end_date: start_date,
                     description: description,
-                    attachment: attachment_name,
                     created_by: created_by,
                     updated_by: updated_by,
                     UserId: UserId,
                     LeaveTypeId: LeaveTypeId,
                 }
-            } else {
-                data = {
-                    leave_start_date: start_date,
-                    leave_end_date: end_date,
-                    description: description,
-                    created_by: created_by,
-                    updated_by: updated_by,
-                    UserId: UserId,
-                    LeaveTypeId: LeaveTypeId,
-                }
-            }
-            const update = await Leave.update(data, {
-                where: {
-                    id: id
-                }
-            })
-            
-            res.status(200).send({
-                success: true,
-                message: 'Succesfully updating leave application'
-            })
-        } else {
-            res.status(404).json({
-                success: false,
-                message: 'Update leave application has been failed. Id not found.'
-            })
-        }
         
+                if(req.files) {
+                    let newAttachment = req.files
+                    newAttachment.forEach((item) => {
+                        existsAttachment.push(item.filename)
+                    })
+                    data.attachment = existsAttachment
+                }
+        
+                const update = await Leave.update(data, {
+                    where: {
+                        id: id
+                    }
+                })
+                
+                res.status(200).send({
+                    success: true,
+                    message: 'Succesfully updating leave application'
+                })
+            } else {
+                res.status(404).send({
+                    success: false,
+                    message: 'ID Not Found.'
+                })
+            }
+        } catch (err) {
+            next(err)            
+        }
     },
 
     async delete(req, res, next) {
@@ -303,6 +306,86 @@ module.exports = {
             let doc_path = ('./storage/attachment/leaves/' + attachment)
 
             res.download(doc_path)
+        } catch (err) {
+            next(err)
+        }
+    },
+
+    async removeAttachment(req, res, next) {
+        try {
+            const { attachment, leaveId } = req.body
+            const leave = await Leave.findByPk(leaveId)
+            let oldAttachment = leave.attachment
+            let newAttachment = []
+            
+            oldAttachment.forEach((item) => {
+                if(item != attachment) {
+                    newAttachment.push(item)
+                } else {
+                    const path = process.cwd() + '/storage/attachment/leaves/' + item
+                    if (fs.existsSync(path)) {
+                        //file exists
+                        fs.unlink(path, (err) => {
+                            if (err) {
+                                console.error(err)
+                                return
+                            }
+                        })
+                    }
+                }
+            })
+
+            data = {
+                attachment: newAttachment
+            }
+            
+            const update = await Leave.update(data, {
+                where: {
+                    id: leaveId
+                }
+            })
+            
+            res.status(200).send({
+                success: true,
+                message: 'Succesfully removing attachment in leave application.'
+            })
+        } catch (err) {
+            next(err)
+        }
+    },
+
+    async getCountAllStatus(req, res, next) {
+        try {
+            const { userId } = req.query
+            let records
+            if(userId) {
+                records = await sequelize.query('SELECT last_status FROM get_all_leaves WHERE requester_id = $1', {
+                    type: QueryTypes.SELECT,
+                    bind: [userId]
+                })
+            } else {
+                records = await sequelize.query('SELECT last_status FROM get_all_leaves', {
+                    type: QueryTypes.SELECT
+                })
+            }
+
+            let waiting = 0, approved = 0, rejected = 0
+
+            records.forEach((item) => {
+                waiting = item.last_status == 'Waiting for Validation' ? waiting + 1 : waiting + 0
+                approved = item.last_status == 'Approved' ? approved + 1 : approved + 0
+                rejected = item.last_status == 'Rejected' ? rejected + 1 : rejected + 0
+            })
+
+            res.status(200).send({
+                success: true,
+                message: 'Get count all status has been successful.',
+                data: {
+                    waiting: waiting,
+                    approved: approved,
+                    rejected: rejected
+                }
+            })
         } catch (err) {
             next(err)
         }

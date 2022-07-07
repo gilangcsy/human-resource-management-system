@@ -12,7 +12,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING
         },
         attachment: {
-            type: Sequelize.STRING
+            type: Sequelize.JSON
         },
         approval_one_status: {
             type: Sequelize.BOOLEAN

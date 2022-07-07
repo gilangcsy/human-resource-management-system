@@ -99,8 +99,6 @@ module.exports = {
 
     async create(req, res, next) {
         try {
-            const { email, invitedBy } = req.body
-
             const invitingUser = await User.create(req.body)
 
             res.status(201).json({
@@ -159,12 +157,8 @@ module.exports = {
 
     async update(req, res, next) {
         try {
-            const { employee_id, full_name, address, RoleId } = req.body
+            const { employee_id, full_name, address, RoleId, gender } = req.body
             const { id } = req.params
-
-            let userUpdate = {}
-
-            console.log(req.file)
 
             const userData = await User.findOne({
                 where: {
@@ -178,7 +172,8 @@ module.exports = {
                     employee_id: employee_id,
                     full_name: full_name,
                     address: address,
-                    RoleId: RoleId
+                    RoleId: RoleId,
+                    gender: gender
                 }
                 const updateUser = await User.update(userUpdate, {
                     where: {
@@ -234,4 +229,76 @@ module.exports = {
             next(err)
         }
     },
+
+    async readGenderAndRoleCount(req, res, next) {
+        
+        try {
+
+            let men = 0
+            let women = 0
+            let roleArray = []
+            let roleHeader = []
+
+            const userData = await User.findAll({
+                where: {
+                    deletedAt: null
+                },
+                attributes: ['id', 'gender'],
+                include: [
+                    {
+                        model: Role,
+                        attributes: ['id', 'name']
+                    },
+                ]
+            })
+
+            const roleData = await Role.findAll({
+                where: {
+                    deletedAt: null
+                },
+                attributes: ['id', 'name'],
+                include: [
+                    {
+                        model: User,
+                        attributes: ['id']
+                    },
+                ]
+            })
+
+            roleData.forEach((item, index) => {
+                roleHeader.push(item.name)
+                roleArray.push(item.Users.length)
+            })
+
+            userData.forEach((item) => {
+                men = item.gender == 'L' ? men + 1 : men + 0
+                women = item.gender == 'P' ? women + 1 : women + 0
+            })
+            
+            let gender = {
+                men: men,
+                women: women
+            }
+
+            let role = {
+                header: roleHeader,
+                role: roleArray
+            }
+
+            let data = {
+                total: userData.length,
+                gender: gender,
+                role: role
+            }
+
+            res.status(200).send({
+                success: true,
+                message: "Get Gender and Role Count has been successfully.",
+                data: data
+            })
+        }
+        catch (err) {
+            next(err)
+        }
+    }
 }

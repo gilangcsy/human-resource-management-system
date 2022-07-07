@@ -51,6 +51,7 @@ require('./app/routes/approvalAuthorization.routes')(app)
 require('./app/routes/roleMenu.routes')(app)
 require('./app/routes/menu.routes')(app)
 require('./app/routes/claim.routes')(app)
+require('./app/routes/visualization.routes')(app)
 
 // app.listen(PORT, () => {
 //     console.log(`Server is running on PORT ${PORT}`);

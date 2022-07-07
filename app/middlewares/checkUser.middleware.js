@@ -2,7 +2,7 @@ const db = require('../models/index.model');
 const User = db.user;
 
 checkIfUserExists = (req, res, next) => {
-    let id = req.body.userId || req.params.id
+    let id = req.body.userId || req.params.id || req.query.userId
     User.findOne({
         where: {
             id: id

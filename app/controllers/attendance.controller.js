@@ -262,6 +262,59 @@ module.exports = {
         }
     },
 
+    async readAllTodayAttendance(req, res, next) {
+        const { page, size } = req.query
+
+        let config = {
+            where: {
+                deletedAt: null
+            },
+            attributes: ['id', 'clockIn', 'clockOut', 'workLoadStatus', 'planningActivity'],
+            order: [
+                ['clockIn', 'DESC']
+            ],
+            include: [
+                {
+                    model: User,
+                    attributes: ['id', 'employee_id', 'full_name'],
+                    where: {
+                        deletedAt: null
+                    },
+                },
+            ],
+        }
+
+        let result = {
+            success: true
+        }
+
+        if(page && size) {
+            const pageAsNumber = Number.parseInt(page)
+            const sizeAsNumber = Number.parseInt(size)
+
+            let pageCleaned = 0
+            if(!Number.isNaN(pageAsNumber) && pageAsNumber > 0) {
+                pageCleaned = pageAsNumber
+            }
+            
+            let sizeCleaned = 10
+            if(!Number.isNaN(sizeAsNumber) && sizeAsNumber > 0 && sizeAsNumber < 10) {
+                sizeCleaned = sizeAsNumber
+            }
+            
+            config.limit = sizeCleaned
+            config.offset = pageCleaned * sizeCleaned
+        } 
+        
+        const attendance = await Attendance.findAndCountAll(config)
+
+        result.totalPages = Math.ceil(attendance.count / size)
+        result.data = attendance
+    
+        res.status(200).send(result)
+
+    },
+
     async update(req, res, next) {
         const { id } = req.params
         const { workLoadStatus, planningActivity, updatedBy } = req.body
