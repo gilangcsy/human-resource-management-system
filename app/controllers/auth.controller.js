@@ -2,18 +2,20 @@
 // const pool = require('./dbCon');
 
 const nodemailer = require('nodemailer')
+const mail = require('../configs/mail.config')
+const randtoken = require('rand-token');
 const db = require('../models/index.model')
 const jwt = require('jsonwebtoken')
 const User = db.user
 const UserInvitation = db.userInvitation
+const PasswordReset = db.passwordReset
 const UserLog = db.userLog
 const Op = db.Sequelize.Op
-const randtoken = require('rand-token');
-const mail = require('../configs/mail.config')
 const config = require('../configs/auth.config')
 
 const bcrypt = require('bcrypt');
 const e = require('express')
+const { mailNotification } = require('../helpers/helpers')
 
 module.exports = {
     async invite(req, res, next) {
@@ -136,7 +138,7 @@ module.exports = {
                                 console.log(info);
                                 res.status(201).json({
                                     success: true,
-                                    message: 'succesfully re-create token.',
+                                    message: 'Succesfully re-create token.',
                                     invitingData: invitingConfirmation
                                 })
                             }
@@ -169,7 +171,6 @@ module.exports = {
             })
 
             if (userData) {
-                console.log(userData)
                 if(userData.User != null) {
                     if (userData.User.dataValues.isVerified) {
                         res.status(400).json({
@@ -182,13 +183,13 @@ module.exports = {
                         if (new Date(userData.expiredDate).getTime() <= ToDate.getTime()) {
                             res.status(200).send({
                                 success: false,
-                                message: "Token is valid but already expired.",
+                                message: "Token already expired.",
                                 data: userData
                             })
                         } else {
                             res.status(200).send({
                                 success: true,
-                                message: "Token is valid and not expired.",
+                                message: "Token is valid.",
                                 data: userData
                             })
                         }
@@ -295,18 +296,18 @@ module.exports = {
                     },
                 ]
             })
-            console.log(userData)
+            
             if (userData) {
                 if (!userData.isVerified) {
                     res.status(400).json({
                         success: false,
-                        message: 'your account is not verified. check your email or call the admin for inviting you.'
+                        message: 'Your account is not verified. Check your email or call the admin for inviting you.'
                     })
                 }
                 if (!userData.isActive) {
                     res.status(400).json({
                         success: false,
-                        message: 'your account is inactive. call the admin to activating your account.'
+                        message: 'Your account is inactive. Call the admin to activating your account.'
                     })
                 }
                 const validatedPassword = bcrypt.compareSync(password, userData.password); // true
@@ -331,13 +332,13 @@ module.exports = {
                 } else {
                     res.status(400).json({
                         success: false,
-                        message: 'your password is wrong.'
+                        message: 'Your email is not registered or your password is wrong.'
                     })
                 }
             } else {
                 res.status(400).json({
                     success: false,
-                    message: 'your email is not registered.'
+                    message: 'Your email is not registered or your password is wrong.'
                 })
             }
             
@@ -359,6 +360,123 @@ module.exports = {
                     res.send({ msg: err.message | 'Error' });
                 }
             });
+        } catch (err) {
+            next(err)
+        }
+    },
+
+    async passwordResetNotification(req, res, next) {
+        try {
+            const { email } = req.body
+            const token = randtoken.generate(64)
+            let created_at = new Date()
+            const expiredDate = new Date(created_at.getFullYear(), created_at.getMonth(), created_at.getDate(), created_at.getHours(), created_at.getMinutes() + parseInt('5'), created_at.getSeconds())
+            const host = req.headers.host == 'localhost:3068' ? 'http://127.0.0.1:8000' : 'https://intranet.ids.co.id'
+            const url = `${host}/auth/forgot-password?token=${token}`
+            const config = {
+                title: "Password Reset - IDS Intranet",
+                email: email,
+                message: "Someone (hopefully you) has asked us to reset the password for your IDS Intranet account. Please click the button below to do so. If you didn't request this password reset, you can go ahead and ignore this email!",
+                token: token,
+                endpoint: url,
+                button: "Reset your password"
+            }
+
+            const findUser = await User.findOne({
+                where: {
+                    email: email
+                }
+            })
+
+            if(findUser) {
+                mailNotification(config)
+                const passwordReset = await PasswordReset.create({
+                    email: email,
+                    token: token,
+                    expiredDate: expiredDate
+                })
+            }
+
+            res.status(200).json({
+                success: true,
+                message: 'Password reset confirmation has been sent.'
+            })
+        } catch (err) {
+            next(err)
+        }
+    },
+
+    async passwordResetCheckToken(req, res, next) {
+        try {
+            const { token } = req.query
+            const checkToken = await PasswordReset.findOne({
+                where: {
+                    token: token
+                }
+            })
+
+            let ToDate = new Date()
+            if(checkToken)
+                if (new Date(checkToken.expiredDate).getTime() <= ToDate.getTime() || checkToken.isUsed)
+                    res.status(200).send({
+                        success: false,
+                        message: "Token already expired or used."
+                    })
+                else
+                    res.status(200).send({
+                        success: true,
+                        message: "Token is valid.",
+                        data: checkToken
+                    })
+            else
+                    res.status(404).send({
+                        success: false,
+                        message: "Token not found."
+                    })
+        } catch (err) {
+            next(err)
+        }
+    },
+
+    async setNewPassword(req, res, next) {
+        try {
+            const { token } = req.query
+            const { password } = req.body
+            const hashedPassword  = bcrypt.hashSync(password, 10)
+            const checkToken = await PasswordReset.findOne({
+                where: {
+                    token: token
+                }
+            })
+
+            let ToDate = new Date();
+            let tokenTime = new Date(checkToken.expiredDate)
+            if (new Date(checkToken.expiredDate).getTime() <= ToDate.getTime()) {
+                res.status(200).send({
+                    success: false,
+                    message: "Token already expired."
+                })
+            } else {
+                const updateTokenStatus = await PasswordReset.update({
+                    isUsed: true
+                }, {
+                    where: {
+                        token: token
+                    }
+                })
+                const updatePassword = await User.update({
+                    password: hashedPassword
+                }, {
+                    where: {
+                        email: checkToken.email
+                    }
+                })
+
+                res.status(200).send({
+                    success: true,
+                    message: "Update password has been successfully."
+                })
+            }
         } catch (err) {
             next(err)
         }

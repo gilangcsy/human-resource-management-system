@@ -48,8 +48,6 @@ module.exports = (sequelize, Sequelize) => {
         },
         updatedAt: {
             type: "TIMESTAMP",
-            defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
-            allowNull: false,
         },
         updatedBy: {
             type: Sequelize.STRING

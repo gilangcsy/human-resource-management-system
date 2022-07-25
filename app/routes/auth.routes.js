@@ -11,5 +11,10 @@ module.exports = app => {
 	router.post('/logout', controller.logout);
 	router.patch('/invitation/accepting', controller.acceptingInvitation);
 
+	//Password Reset
+	router.post('/passwordReset', controller.passwordResetNotification);
+	router.get('/passwordReset', controller.passwordResetCheckToken);
+	router.patch('/setNewPassword', controller.setNewPassword);
+
 	app.use(`${API.VERSION}/auth/`, router);
 }
