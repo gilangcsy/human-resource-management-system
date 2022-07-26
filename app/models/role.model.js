@@ -1,7 +1,11 @@
 module.exports = (sequelize, Sequelize) => {
     const Role = sequelize.define('Role', {
         name: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            allowNull: false
+        },
+        superiorId: {
+            type: Sequelize.INTEGER
         },
         createdAt: {
             type: "TIMESTAMP",

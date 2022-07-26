@@ -40,6 +40,7 @@ db.role = require('./role.model')(sequelize, Sequelize)
 db.menu = require('./menu.model')(sequelize, Sequelize)
 db.roleMenu = require('./roleMenu.model')(sequelize, Sequelize)
 db.passwordReset = require('./passwordReset.model')(sequelize, Sequelize)
+db.taskManagement = require('./taskManagement.model')(sequelize, Sequelize)
 
 db.user.hasMany(db.userInvitation)
 db.userInvitation.belongsTo(db.user)

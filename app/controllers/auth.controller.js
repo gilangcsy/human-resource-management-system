@@ -313,7 +313,7 @@ module.exports = {
                 const validatedPassword = bcrypt.compareSync(password, userData.password); // true
                 if (validatedPassword) {
                     const tokenJwt = jwt.sign({ id: userData.id }, config.secret, {
-                        expiresIn: 10800 // 24 hours
+                        expiresIn: 10800 // 3 hours
                     })
 
                     res.status(201).json({

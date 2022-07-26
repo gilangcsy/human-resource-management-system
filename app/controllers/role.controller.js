@@ -1,5 +1,6 @@
 const db = require('../models/index.model');
 const Role = db.role
+const User = db.user
 
 module.exports = {
     async read(req, res, next) {
@@ -9,6 +10,17 @@ module.exports = {
                     deletedAt: null
                 },
                 attributes: ['id', 'name'],
+                include: [
+                    {
+                        model: User,
+                        attributes: ['id', 'full_name', 'RoleId'],
+                        where: {
+                            deletedAt: null,
+                            isVerified: true,
+                            isActive: true
+                        },
+                    },
+                ],
                 order: [
                     ['createdAt', 'ASC']
                 ]
@@ -21,6 +33,41 @@ module.exports = {
             })
         }
         catch (err) {
+            next(err)
+        }
+    },
+
+    async readBySuperiorId(req, res, next) {
+        try {
+            const { superiorId } = req.params
+            const allData = await Role.findAll({
+                where: {
+                    deletedAt: null,
+                    superiorId: superiorId
+                },
+                attributes: ['id', 'name'],
+                include: [
+                    {
+                        model: User,
+                        attributes: ['id', 'full_name', 'RoleId'],
+                        where: {
+                            deletedAt: null,
+                            isVerified: true,
+                            isActive: true
+                        },
+                    },
+                ],
+                order: [
+                    ['createdAt', 'ASC']
+                ]
+            })
+
+            res.status(200).send({
+                success: true,
+                message: "Get All Role Has Been Successfully.",
+                data: allData
+            })
+        }catch (err) {
             next(err)
         }
     },
@@ -150,4 +197,15 @@ module.exports = {
             next(err)
         }
     },
+
+    async checkSuperior(req, res, next) {
+        try {
+            
+        } catch (err) {
+            res.status(400).send({
+                success: false,
+                message: err.message
+            })
+        }
+    }
 }

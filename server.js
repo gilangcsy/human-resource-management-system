@@ -44,6 +44,7 @@ require('./app/routes/roleMenu.routes')(app)
 require('./app/routes/menu.routes')(app)
 require('./app/routes/claim.routes')(app)
 require('./app/routes/visualization.routes')(app)
+require('./app/routes/taskManagement.routes')(app)
 
 //Inisasi routing pada halaman awal
 app.use('/', (req, res, next) => {

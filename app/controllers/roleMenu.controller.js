@@ -91,15 +91,16 @@ module.exports = {
     async update(req, res, next) {
         try {
             const { id } = req.params
-            const { allow_create, allow_read, allow_update, allow_delete, updatedBy } = req.body
-
+            const { allow_create, allow_read, allow_update, allow_delete, updatedBy, deletedAt } = req.body
+            console.log(deletedAt)
             let data = {
                 allow_create: allow_create,
                 allow_read: allow_read,
                 allow_update: allow_update,
                 allow_delete: allow_delete,
                 updatedBy: updatedBy,
-                updatedAt: new Date()
+                updatedAt: new Date(),
+                deletedAt: deletedAt ? new Date : null
             }
 
             const update = await RoleMenu.update(data, {
