@@ -1,6 +1,6 @@
 //Memanggil pool
 // const pool = require('./dbCon');
-
+const config = require('../configs/auth.config');
 const nodemailer = require('nodemailer')
 const mail = require('../configs/mail.config')
 const randtoken = require('rand-token');
@@ -11,7 +11,6 @@ const UserInvitation = db.userInvitation
 const PasswordReset = db.passwordReset
 const UserLog = db.userLog
 const Op = db.Sequelize.Op
-const config = require('../configs/auth.config')
 
 const bcrypt = require('bcrypt');
 const e = require('express')
@@ -83,7 +82,7 @@ module.exports = {
                             console.log(info);
                             res.status(201).json({
                                 success: true,
-                                message: 'succesfully inviting user',
+                                message: 'Succesfully inviting user.',
                                 userData: invitingUser,
                                 invitingData: invitingConfirmation
                             })
@@ -310,7 +309,7 @@ module.exports = {
                         message: 'Your account is inactive. Call the admin to activating your account.'
                     })
                 }
-                const validatedPassword = bcrypt.compareSync(password, userData.password); // true
+                const validatedPassword = bcrypt.compareSync(password, userData.password) // true
                 if (validatedPassword) {
                     const tokenJwt = jwt.sign({ id: userData.id }, config.secret, {
                         expiresIn: 10800 // 3 hours
@@ -477,6 +476,27 @@ module.exports = {
                     message: "Update password has been successfully."
                 })
             }
+        } catch (err) {
+            next(err)
+        }
+    },
+
+    async checkToken(req, res, next) {
+        try {
+            const { token } = req.body
+            
+            jwt.verify(token, config.secret, (err, decoded) => {
+                if (err) {
+                    return res.status(401).send({
+                        success: false,
+                        message: 'Unauthorized!'
+                    });
+                }
+                return res.status(200).send({
+                    success: true,
+                    message: 'Token valid.'
+                });
+            })
         } catch (err) {
             next(err)
         }

@@ -17,7 +17,8 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
         idle: dbConfig.pool.idle,
     },
     debug:  false,
-    dateStrings: 'date'
+    dateStrings: 'date',
+    logging: false
 })
 
 const db = {};
@@ -41,6 +42,8 @@ db.menu = require('./menu.model')(sequelize, Sequelize)
 db.roleMenu = require('./roleMenu.model')(sequelize, Sequelize)
 db.passwordReset = require('./passwordReset.model')(sequelize, Sequelize)
 db.taskManagement = require('./taskManagement.model')(sequelize, Sequelize)
+db.news = require('./news.model')(sequelize, Sequelize)
+db.department = require('./department.model')(sequelize, Sequelize)
 
 db.user.hasMany(db.userInvitation)
 db.userInvitation.belongsTo(db.user)
@@ -77,5 +80,11 @@ db.claim.belongsTo(db.user)
 
 db.claimType.hasMany(db.claim)
 db.claim.belongsTo(db.claimType)
+
+db.user.hasMany(db.news)
+db.news.belongsTo(db.user)
+
+db.department.hasMany(db.role)
+db.role.belongsTo(db.department)
 
 module.exports = db;

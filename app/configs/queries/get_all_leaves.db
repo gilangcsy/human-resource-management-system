@@ -78,4 +78,4 @@
      LEFT JOIN "User" approver_one ON approver_one.id = "ApprovalTemplate".approver_one
      LEFT JOIN "User" approver_two ON approver_two.id = "ApprovalTemplate".approver_two
      LEFT JOIN "User" approver_three ON approver_three.id = "ApprovalTemplate".approver_three
-  WHERE "Leave".deleted_at IS NULL;
+  WHERE "Leave".deleted_at IS NULL AND "ApprovalTemplate".deleted_at IS NULL AND "ApprovalAuthorization".deleted_at IS NULL

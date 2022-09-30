@@ -1,9 +1,9 @@
-const db = require('../models/index.model');
+const db = require('../models/index.model')
 const Role = db.role
 const User = db.user
 
 module.exports = {
-    async read(req, res, next) {
+    async readWithUser(req, res, next) {
         try {
             const allData = await Role.findAll({
                 where: {
@@ -21,6 +21,29 @@ module.exports = {
                         },
                     },
                 ],
+                order: [
+                    ['createdAt', 'ASC']
+                ]
+            })
+
+            res.status(200).send({
+                success: true,
+                message: "Get All Role Has Been Successfully.",
+                data: allData
+            })
+        }
+        catch (err) {
+            next(err)
+        }
+    },
+
+    async read(req, res, next) {
+        try {
+            const allData = await Role.findAll({
+                where: {
+                    deletedAt: null
+                },
+                attributes: ['id', 'name'],
                 order: [
                     ['createdAt', 'ASC']
                 ]
@@ -80,7 +103,7 @@ module.exports = {
                 where: {
                     id: id
                 },
-                attributes: ['id', 'name']
+                attributes: ['id', 'name', 'superiorId']
             })
 
             if (data) {
@@ -104,13 +127,13 @@ module.exports = {
 
     async create(req, res, next) {
         try {
-            const { name, createdBy, updatedBy } = req.body
+            const { name, superiorId, createdBy, updatedBy, DepartmentId } = req.body
 
             const creatingRole = await Role.create(req.body)
 
             res.status(201).json({
                 success: true,
-                message: 'Succesfully creating Role.',
+                message: 'Succesfully creating role.',
                 data: creatingRole
             })
         }
@@ -159,7 +182,7 @@ module.exports = {
 
     async update(req, res, next) {
         try {
-            const { name, updatedBy } = req.body
+            const { name, updatedBy, superiorId } = req.body
             const { id } = req.params
 
             const data = await Role.findOne({
@@ -173,6 +196,7 @@ module.exports = {
                 let updatingData = {
                     name: name,
                     updatedBy: updatedBy,
+                    superiorId: superiorId,
                     updatedAt: new Date()
                 }
                 const update = await Role.update(updatingData, {

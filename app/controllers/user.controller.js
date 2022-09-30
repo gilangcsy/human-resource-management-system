@@ -1,6 +1,7 @@
 const db = require('../models/index.model')
 const User = db.user
 const Role = db.role
+const Department = db.department
 const Attendance = db.attendance
 
 const bcrypt = require("bcrypt");
@@ -46,6 +47,24 @@ module.exports = {
                     deletedAt: null
                 },
                 attributes: ['id', 'full_name', 'email', 'isActive', 'isVerified', 'RoleId'],
+                include: [
+                    {
+                        model: Role,
+                        attributes: ['id', 'name'],
+                        where: {
+                            deletedAt: null
+                        },
+                        include: [
+                            {
+                                model: Department,
+                                attributes: ['id', 'name'],
+                                where: {
+                                    deletedAt: null
+                                }
+                            },
+                        ],
+                    },
+                ],
                 order: [
                     ['full_name', 'ASC']
                 ]
@@ -70,7 +89,7 @@ module.exports = {
                     id: id,
                     deletedAt: null
                 },
-                attributes: ['id', 'employee_id', 'full_name', 'email', 'address', 'RoleId'],
+                attributes: ['id', 'employee_id', 'full_name', 'email', 'address', 'RoleId', 'ttl', 'gender', 'join_date'],
                 include: [
                     {
                         model: Role,
@@ -157,7 +176,7 @@ module.exports = {
 
     async update(req, res, next) {
         try {
-            const { employee_id, full_name, address, RoleId, gender } = req.body
+            const { employee_id, full_name, address, RoleId, gender, ttl } = req.body
             const { id } = req.params
 
             const userData = await User.findOne({
@@ -173,7 +192,8 @@ module.exports = {
                     full_name: full_name,
                     address: address,
                     RoleId: RoleId,
-                    gender: gender
+                    gender: gender,
+                    ttl: ttl
                 }
                 const updateUser = await User.update(userUpdate, {
                     where: {
@@ -300,5 +320,37 @@ module.exports = {
         catch (err) {
             next(err)
         }
+    },
+
+    async getBirthdayByMonth(req, res, next) {
+        try {
+            const today = new Date()
+            
+            const allUser = await User.findAll({
+                attributes: ['id', 'full_name', 'ttl']
+            })
+
+            let data = []
+
+            
+            
+            allUser.forEach((item, index) => {
+                let ttl = new Date(item.ttl)
+                
+                if(ttl.getMonth() == today.getMonth())
+                    data.push({
+                        full_name: item.full_name,
+                        ttl: item.ttl
+                    })
+            })
+
+            res.status(200).send({
+                success: true,
+                data: data
+            })
+        } catch (err) {
+            next(err)
+        }
+
     }
 }

@@ -140,6 +140,8 @@ module.exports = {
     async readByUser(req, res, next) {
         try {
             const { id } = req.params
+
+            const { status } = req.query
             
             const findUser = await User.findByPk(id)
             if (!findUser) {
@@ -163,21 +165,30 @@ module.exports = {
                     let data = {}
                     let isSuperior = false
 
-                    myTask = await sequelize.query('SELECT * FROM get_all_tasks WHERE assign_to_id = $1', {
-                        type: QueryTypes.SELECT,
-                        bind: [id]
-                    })
+                    if (status) {
+                        myTask = await sequelize.query('SELECT * FROM get_all_tasks WHERE assign_to_id = $1 AND status = $2', {
+                            type: QueryTypes.SELECT,
+                            bind: [id, status]
+                        })
                     
-                    memberTask = await sequelize.query('SELECT * FROM get_all_tasks WHERE owner_id = $1 AND assign_to_id != $1', {
-                        type: QueryTypes.SELECT,
-                        bind: [id]
-                    })
+                        memberTask = await sequelize.query('SELECT * FROM get_all_tasks WHERE owner_id = $1 AND assign_to_id != $1 AND status = $2', {
+                            type: QueryTypes.SELECT,
+                            bind: [id, status]
+                        })
+                    } else {
+                        myTask = await sequelize.query('SELECT * FROM get_all_tasks WHERE assign_to_id = $1', {
+                            type: QueryTypes.SELECT,
+                            bind: [id]
+                        })
+                        
+                        memberTask = await sequelize.query('SELECT * FROM get_all_tasks WHERE owner_id = $1 AND assign_to_id != $1', {
+                            type: QueryTypes.SELECT,
+                            bind: [id]
+                        })
+                    }
 
                     data.myTask = myTask
                     data.memberTask = memberTask
-                    isSuperior = true
-
-                    data.isSuperior = isSuperior
                     
                     res.status(200).send({
                         success: true,

@@ -1,7 +1,7 @@
 const controller = require('../controllers/taskManagement.controller');
 const API = require('../configs/db.config');
 
-const { authJwt, verifyUser } = require('../middlewares/index.middleware');
+const { authJwt } = require('../middlewares/index.middleware');
 
 module.exports = app => {
 

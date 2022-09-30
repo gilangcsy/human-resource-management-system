@@ -6,7 +6,6 @@ const Claim = db.claim
 
 module.exports = {
     async readGenderAndRoleCount(req, res, next) {
-            
         try {
             let men = 0
             let women = 0

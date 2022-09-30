@@ -13,6 +13,7 @@ module.exports = app => {
 	router.get('/genderAndRole/count', controller.readGenderAndRoleCount);
 	router.patch('/:id', controller.uploadImg.single('avatar'), controller.update);
 	router.post('/', controller.create);
+	router.get('/getBirthday/month', controller.getBirthdayByMonth);
 
 	app.use(`${API.VERSION}/users`, router);
 }

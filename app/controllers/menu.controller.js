@@ -114,6 +114,7 @@ module.exports = {
                 data.position_number = getLatestPositionMasterMenu ? getLatestPositionMasterMenu.position_number + 1 : 1
             }
 
+
             const createData = await Menu.create(data)
 
             res.status(200).send({

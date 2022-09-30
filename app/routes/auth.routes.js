@@ -14,6 +14,7 @@ module.exports = app => {
 	//Password Reset
 	router.post('/passwordReset', controller.passwordResetNotification);
 	router.get('/passwordReset', controller.passwordResetCheckToken);
+	router.post('/checkToken', controller.checkToken);
 	router.patch('/setNewPassword', controller.setNewPassword);
 
 	app.use(`${API.VERSION}/auth/`, router);

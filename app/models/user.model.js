@@ -6,6 +6,9 @@ module.exports = (sequelize, Sequelize) => {
         full_name: {
             type: Sequelize.STRING
         },
+        ttl: {
+            type: Sequelize.DATEONLY
+        },
         email: {
             type: Sequelize.STRING,
             allowNull: false,
@@ -23,6 +26,9 @@ module.exports = (sequelize, Sequelize) => {
         avatar: {
             type: Sequelize.STRING,
             defaultValue: 'default.jpg'
+        },
+        join_date: {
+            type: Sequelize.DATEONLY
         },
         isActive: {
             type: Sequelize.BOOLEAN,
