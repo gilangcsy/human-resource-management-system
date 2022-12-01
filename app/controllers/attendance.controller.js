@@ -220,7 +220,7 @@ module.exports = {
             where: {
                 UserId: id
             },
-            attributes: ['id', 'clockIn', 'clockOut', 'workLoadStatus', 'planningActivity'],
+            attributes: ['id', 'clockIn', 'clockOut', 'workload_status', 'planning_activity'],
             order: [
                 ['clockIn', 'DESC']
             ]

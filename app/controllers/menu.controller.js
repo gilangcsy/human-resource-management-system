@@ -217,7 +217,7 @@ module.exports = {
         try {
             const allData = await Menu.findAll({
                 where: {
-                    deletedAt: null,
+                    deleted_at: null,
                     is_active: true,
                     master_menu: 0
                 },

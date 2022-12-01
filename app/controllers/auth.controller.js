@@ -287,7 +287,7 @@ module.exports = {
                 where: {
                     email: email
                 },
-                attributes: ['id', 'email', 'employee_id', 'isActive', 'isVerified', 'password', 'full_name'],
+                attributes: ['id', 'email', 'employee_id', 'is_active', 'is_verified', 'password', 'full_name'],
                 include: [
                     {
                         model: db.role,
@@ -297,13 +297,13 @@ module.exports = {
             })
             
             if (userData) {
-                if (!userData.isVerified) {
+                if (!userData.is_verified) {
                     res.status(400).json({
                         success: false,
                         message: 'Your account is not verified. Check your email or call the admin for inviting you.'
                     })
                 }
-                if (!userData.isActive) {
+                if (!userData.is_active) {
                     res.status(400).json({
                         success: false,
                         message: 'Your account is inactive. Call the admin to activating your account.'

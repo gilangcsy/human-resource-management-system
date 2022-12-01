@@ -8,10 +8,10 @@ module.exports = (sequelize, Sequelize) => {
         clockOut: {
             type: "TIMESTAMP"
         },
-        workLoadStatus: {
+        workload_status: {
             type: Sequelize.STRING
         },
-        planningActivity: {
+        planning_activity: {
             type: Sequelize.STRING
         },
         location: {
@@ -23,33 +23,35 @@ module.exports = (sequelize, Sequelize) => {
         latitude: {
             type: Sequelize.TEXT
         },
-        clockInPhoto: {
+        clock_in_photo: {
             type: Sequelize.STRING
         },
-        clockOutPhoto: {
+        clock_out_photo: {
             type: Sequelize.STRING
         },
-        createdAt: {
+        created_at: {
             type: "TIMESTAMP",
             defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
             allowNull: false,
         },
-        createdBy: {
+        created_by: {
             type: Sequelize.STRING
         },
-        deletedAt: {
+        deleted_at: {
             type: "TIMESTAMP"
         },
-        deletedBy: {
+        deleted_by: {
             type: Sequelize.STRING
         },
-        updatedAt: {
+        updated_at: {
             type: "TIMESTAMP",
         },
-        updatedBy: {
+        updated_by: {
             type: Sequelize.STRING
         },
     }, {
+        createdAt: false, // don't add createdAt attribute
+        updatedAt: false,
         tableName: 'Attendance'
     })
     return Attendance;

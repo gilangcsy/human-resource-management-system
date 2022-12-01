@@ -8,23 +8,24 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false
         },
-        expiredDate: {
+        expired_date: {
             type: "TIMESTAMP",
             allowNull: false
         },
-        isUsed: {
+        is_used: {
             type: Sequelize.BOOLEAN,
             defaultValue: false,
         },
-        usedAt: {
+        used_at: {
             type: "TIMESTAMP"
         },
-        createdAt: {
+        created_at: {
             type: "TIMESTAMP",
             defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
             allowNull: false,
         },
     }, {
+        createdAt: false,
         updatedAt: false, // don't add updatedAt attribute
         tableName: 'PasswordReset'
     })

@@ -7,15 +7,15 @@ module.exports = (sequelize, Sequelize) => {
         description: {
             type: Sequelize.TEXT
         },
-        startDate: {
+        start_date: {
             type: "TIMESTAMP",
             allowNull: false,
         },
-        endDate: {
+        end_date: {
             type: "TIMESTAMP",
             allowNull: false,
         },
-        assignTo: {
+        assign_to: {
             type: Sequelize.INTEGER,
             allowNull: false
         },
@@ -27,31 +27,33 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false
         },
-        ownerId: {
+        owner_id: {
             type: Sequelize.INTEGER,
             allowNull: false
         },
-        createdAt: {
+        created_at: {
             type: "TIMESTAMP",
             defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
             allowNull: false,
         },
-        createdBy: {
+        created_by: {
             type: Sequelize.STRING
         },
-        deletedAt: {
+        deleted_at: {
             type: "TIMESTAMP"
         },
-        deletedBy: {
+        deleted_by: {
             type: Sequelize.STRING
         },
-        updatedAt: {
+        updated_at: {
             type: "TIMESTAMP"
         },
-        updatedBy: {
+        updated_by: {
             type: Sequelize.STRING
         },
     }, {
+        createdAt: false,
+        updatedAt: false, // don't add updatedAt attribute
         tableName: 'TaskManagement'
     })
     return TaskManagement;

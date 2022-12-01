@@ -30,35 +30,37 @@ module.exports = (sequelize, Sequelize) => {
         join_date: {
             type: Sequelize.DATEONLY
         },
-        isActive: {
+        is_active: {
             type: Sequelize.BOOLEAN,
             defaultValue: false,
         },
-        isVerified: {
+        is_verified: {
             type: Sequelize.BOOLEAN,
             defaultValue: false,
         },
-        createdAt: {
+        created_at: {
             type: "TIMESTAMP",
             defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
             allowNull: false,
         },
-        createdBy: {
+        created_by: {
             type: Sequelize.STRING
         },
-        deletedAt: {
+        deleted_at: {
             type: "TIMESTAMP"
         },
-        deletedBy: {
+        deleted_by: {
             type: Sequelize.STRING
         },
-        updatedAt: {
-            type: "TIMESTAMP",
+        updated_at: {
+            type: "TIMESTAMP"
         },
-        updatedBy: {
+        updated_by: {
             type: Sequelize.STRING
         },
     }, {
+        createdAt: false,
+        updatedAt: false, // don't add updatedAt attribute
         tableName: 'User'
     })
     return User;

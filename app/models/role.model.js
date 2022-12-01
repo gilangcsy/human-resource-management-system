@@ -4,30 +4,32 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false
         },
-        superiorId: {
+        superior_id: {
             type: Sequelize.INTEGER
         },
-        createdAt: {
+        created_at: {
             type: "TIMESTAMP",
             defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
             allowNull: false,
         },
-        createdBy: {
+        created_by: {
             type: Sequelize.STRING
         },
-        deletedAt: {
+        deleted_at: {
             type: "TIMESTAMP"
         },
-        deletedBy: {
+        deleted_by: {
             type: Sequelize.STRING
         },
-        updatedAt: {
+        updated_at: {
             type: "TIMESTAMP"
         },
-        updatedBy: {
+        updated_by: {
             type: Sequelize.STRING
         },
     }, {
+        createdAt: false,
+        updatedAt: false, // don't add updatedAt attribute
         tableName: 'Role'
     })
     return Role;
