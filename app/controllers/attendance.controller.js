@@ -10,7 +10,7 @@ const fs = require('fs');
 const multer = require('multer')
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        if (file.fieldname === 'clockInPhoto') {
+        if (file.fieldname === 'clock_in_photo') {
             cb(null, './storage/attachment/attendances/clockIn')
         } else {
             cb(null, './storage/attachment/attendances/clockOut')
@@ -45,7 +45,7 @@ module.exports = {
     async create(req, res, next) {
         try {
             let today = new Date()
-            const { location, latitude, longitude, photo, workLoadStatus, planningActivity, userId } = req.body
+            const { location, latitude, longitude, photo, workload_status, planning_activity, userId } = req.body
             const attendance = await Attendance.findOne({
                 limit: 1,
                 where: {
@@ -76,11 +76,11 @@ module.exports = {
                                 message: "Your attendance already recorded today."
                             })
                         } else {
-                            let clockOutPhoto = req.files['0'].filename
+                            let clock_out_photo = req.files['0'].filename
                             let data = {
                                 clockOut: new Date(),
-                                clockOutPhoto: clockOutPhoto,
-                                updatedBy: userId,
+                                clock_out_photo: clock_out_photo,
+                                updated_by: userId,
                                 location: location,
                                 latitude: latitude,
                                 longitude: longitude,
@@ -96,16 +96,16 @@ module.exports = {
                             })
                         }
                     } else {
-                        let clockInPhoto = req.files['0'].filename
+                        let clock_in_photo = req.files['0'].filename
                         let data = {
-                            clockInPhoto: clockInPhoto,
-                            workLoadStatus: workLoadStatus,
-                            planningActivity: planningActivity,
+                            clock_in_photo: clock_in_photo,
+                            workload_status: workload_status,
+                            planning_activity: planning_activity,
                             location: location,
                             latitude: latitude,
                             longitude: longitude,
                             UserId: userId,
-                            createdBy: userId
+                            created_by: userId
                         }
                         const attendingIn = await Attendance.create(data)
                         res.status(200).send({
@@ -115,16 +115,16 @@ module.exports = {
                         })
                     }
                 } else {
-                    let clockInPhoto = req.files['0'].filename
+                    let clock_in_photo = req.files['0'].filename
                     let data = {
-                        clockInPhoto: clockInPhoto,
-                        workLoadStatus: workLoadStatus,
-                        planningActivity: planningActivity,
+                        clock_in_photo: clock_in_photo,
+                        workload_status: workload_status,
+                        planning_activity: planning_activity,
                         location: location,
                         latitude: latitude,
                         longitude: longitude,
                         UserId: userId,
-                        createdBy: userId
+                        created_by: userId
                     }
                     const attendingIn = await Attendance.create(data)
                     res.status(200).send({
@@ -146,9 +146,9 @@ module.exports = {
             const attendance = await Attendance.findOne({
                 where: {
                     id: id,
-                    deletedAt: null
+                    deleted_at: null
                 },
-                attributes: ['id', 'clockIn', 'clockOut', 'clockInPhoto', 'clockOutPhoto', 'location', 'longitude', 'latitude', 'workLoadStatus', 'planningActivity']
+                attributes: ['id', 'clockIn', 'clockOut', 'clock_in_photo', 'clock_out_photo', 'location', 'longitude', 'latitude', 'workload_status', 'planning_activity']
             })
 
             if (attendance) {
@@ -175,7 +175,7 @@ module.exports = {
             const attendance = await Attendance.findAll({
                 where: {
                     UserId: id,
-                    deletedAt: null
+                    deleted_at: null
                 },
                 attributes: ['id', 'clockIn', 'clockOut'],
                 include: [
@@ -183,7 +183,7 @@ module.exports = {
                         model: User,
                         attributes: ['id', 'employee_id', 'full_name'],
                         where: {
-                            deletedAt: null
+                            deleted_at: null
                         },
                     },
                 ],
@@ -267,9 +267,9 @@ module.exports = {
 
         let config = {
             where: {
-                deletedAt: null
+                deleted_at: null
             },
-            attributes: ['id', 'clockIn', 'clockOut', 'workLoadStatus', 'planningActivity'],
+            attributes: ['id', 'clockIn', 'clockOut', 'workload_status', 'planning_activity'],
             order: [
                 ['clockIn', 'DESC']
             ],
@@ -278,7 +278,7 @@ module.exports = {
                     model: User,
                     attributes: ['id', 'employee_id', 'full_name'],
                     where: {
-                        deletedAt: null
+                        deleted_at: null
                     },
                 },
             ],
@@ -317,11 +317,11 @@ module.exports = {
 
     async update(req, res, next) {
         const { id } = req.params
-        const { workLoadStatus, planningActivity, updatedBy } = req.body
+        const { workload_status, planning_activity, updated_by } = req.body
         let data = {
-            workLoadStatus: workLoadStatus,
-            planningActivity: planningActivity,
-            updatedBy: updatedBy
+            workload_status: workload_status,
+            planning_activity: planning_activity,
+            updated_by: updated_by
         }
         const update = await Attendance.update(data, {
             where: {

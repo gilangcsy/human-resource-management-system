@@ -62,7 +62,7 @@ module.exports = {
 
     async create(req, res, next) {
         try {
-            const { RoleId, MenuId, allow_create, allow_read, allow_update, allow_delete, createdBy } = req.body
+            const { RoleId, MenuId, allow_create, allow_read, allow_update, allow_delete, created_by } = req.body
 
             let data = {
                 RoleId: RoleId,
@@ -71,8 +71,8 @@ module.exports = {
                 allow_read: allow_read,
                 allow_update: allow_update,
                 allow_delete: allow_delete,
-                createdBy: createdBy,
-                createdAt: new Date()
+                created_by: created_by,
+                created_by: new Date()
             }
 
             const create = await RoleMenu.create(data)
@@ -91,16 +91,16 @@ module.exports = {
     async update(req, res, next) {
         try {
             const { id } = req.params
-            const { allow_create, allow_read, allow_update, allow_delete, updatedBy, deletedAt } = req.body
-            console.log(deletedAt)
+            const { allow_create, allow_read, allow_update, allow_delete, updated_by, deleted_at } = req.body
+            
             let data = {
                 allow_create: allow_create,
                 allow_read: allow_read,
                 allow_update: allow_update,
                 allow_delete: allow_delete,
-                updatedBy: updatedBy,
-                updatedAt: new Date(),
-                deletedAt: deletedAt ? new Date : null
+                updated_by: updated_by,
+                updated_at: new Date(),
+                deleted_at: deleted_at ? new Date : null
             }
 
             const update = await RoleMenu.update(data, {

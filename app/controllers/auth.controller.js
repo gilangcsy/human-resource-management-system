@@ -35,7 +35,7 @@ module.exports = {
                         email: email
                     },
                     attributes: {
-                        include: ['id', 'email', 'isVerified']
+                        include: ['id', 'email', 'is_verified']
                     }
                 })
 
@@ -89,7 +89,7 @@ module.exports = {
                         }
                     })
                 } else {
-                    if(userData.isVerified) {
+                    if(userData.is_verified) {
                         res.status(400).json({
                             success: false,
                             message: 'This account already registered.'
@@ -164,17 +164,17 @@ module.exports = {
                 include: [
                     {
                         model: User,
-                        attributes: ['id', 'email', 'isVerified']
+                        attributes: ['id', 'email', 'is_verified']
                     },
                 ]
             })
 
             if (userData) {
                 if(userData.User != null) {
-                    if (userData.User.dataValues.isVerified) {
+                    if (userData.User.dataValues.is_verified) {
                         res.status(400).json({
                             success: false,
-                            isVerified: true,
+                            is_verified: true,
                             message: 'User already registered.'
                         })
                     } else {
@@ -196,7 +196,7 @@ module.exports = {
                 } else {
                     res.status(404).json({
                         success: false,
-                        isVerified: false,
+                        is_verified: false,
                         message: 'User not found.'
                     })
                 }
@@ -225,27 +225,27 @@ module.exports = {
                 include: [
                     {
                         model: User,
-                        attributes: ['id', 'isVerified']
+                        attributes: ['id', 'is_verified']
                     },
                 ]
             })
 
             if (user) {
                 const hashedPassword = bcrypt.hashSync(password, 10);
-                if (user.User.dataValues.isVerified) {
+                if (user.User.dataValues.is_verified) {
                     res.status(400).json({
                         success: false,
-                        isVerified: true,
+                        is_verified: true,
                         message: 'User already registered.'
                     })
                 } else {
                     const updateUser = await User.update({
                         full_name: full_name,
                         password: hashedPassword,
-                        isActive: true,
-                        isVerified: true,
-                        updatedAt: new Date(),
-                        updatedBy: user.User.dataValues.id
+                        is_active: true,
+                        is_verified: true,
+                        updated_at: new Date(),
+                        updated_by: user.User.dataValues.id
                     }, {
                         where: {
                             id: user.User.dataValues.id
@@ -254,8 +254,8 @@ module.exports = {
     
                     const updateInvitation = await UserInvitation.update({
                         isApproved: true,
-                        updatedAt: new Date(),
-                        updatedBy: user.User.dataValues.id
+                        updated_at: new Date(),
+                        updated_by: user.User.dataValues.id
                     }, {
                         where: {
                             token: token

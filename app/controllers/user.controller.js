@@ -44,22 +44,22 @@ module.exports = {
             const { id } = req.query;
             const userData = await User.findAll({
                 where: {
-                    deletedAt: null
+                    deleted_at: null
                 },
-                attributes: ['id', 'full_name', 'email', 'isActive', 'isVerified', 'RoleId'],
+                attributes: ['id', 'full_name', 'email', 'is_active', 'is_verified', 'RoleId'],
                 include: [
                     {
                         model: Role,
                         attributes: ['id', 'name'],
                         where: {
-                            deletedAt: null
+                            deleted_at: null
                         },
                         include: [
                             {
                                 model: Department,
                                 attributes: ['id', 'name'],
                                 where: {
-                                    deletedAt: null
+                                    deleted_at: null
                                 }
                             },
                         ],
@@ -87,7 +87,7 @@ module.exports = {
             const userData = await User.findOne({
                 where: {
                     id: id,
-                    deletedAt: null
+                    deleted_at: null
                 },
                 attributes: ['id', 'employee_id', 'full_name', 'email', 'address', 'RoleId', 'ttl', 'gender', 'join_date'],
                 include: [
@@ -139,15 +139,15 @@ module.exports = {
                 where: {
                     id: id
                 },
-                attributes: ['isActive', 'isVerified']
+                attributes: ['is_active', 'is_verified']
             })
 
-            let isActive = userData.isActive
-            let isVerified = userData.isVerified
+            let is_active = userData.is_active
+            let is_verified = userData.is_verified
 
-            if (isActive && isVerified) {
+            if (is_active && is_verified) {
                 status = false;
-            } else if (!isActive && isVerified) {
+            } else if (!is_active && is_verified) {
                 status = true;
             } else {
                 res.status(400).json({
@@ -157,7 +157,7 @@ module.exports = {
             }
 
             const updateUser = await User.update({
-                isActive: status
+                is_active: status
             }, {
                 where: {
                     id: id
@@ -183,7 +183,7 @@ module.exports = {
                 where: {
                     id: id
                 },
-                attributes: ['isActive', 'isVerified']
+                attributes: ['is_active', 'is_verified']
             })
 
             if(userData) {
@@ -221,12 +221,12 @@ module.exports = {
                 where: {
                     id: id
                 },
-                attributes: ['isActive', 'isVerified']
+                attributes: ['is_active', 'is_verified']
             })
 
             if (userData) {
                 const updateUser = await User.update({
-                    deletedAt: new Date(),
+                    deleted_at: new Date(),
                     deletedBy: deletedBy
                 }, {
                     where: {
@@ -261,7 +261,7 @@ module.exports = {
 
             const userData = await User.findAll({
                 where: {
-                    deletedAt: null
+                    deleted_at: null
                 },
                 attributes: ['id', 'gender'],
                 include: [
@@ -274,7 +274,7 @@ module.exports = {
 
             const roleData = await Role.findAll({
                 where: {
-                    deletedAt: null
+                    deleted_at: null
                 },
                 attributes: ['id', 'name'],
                 include: [

@@ -13,7 +13,7 @@ module.exports = {
             let roleHeader = []
             const userData = await User.findAll({
                 where: {
-                    deletedAt: null
+                    deleted_at: null
                 },
                 attributes: ['id', 'gender'],
                 include: [
@@ -26,7 +26,7 @@ module.exports = {
     
             const roleData = await Role.findAll({
                 where: {
-                    deletedAt: null
+                    deleted_at: null
                 },
                 attributes: ['id', 'name'],
                 include: [

@@ -8,7 +8,7 @@ module.exports = {
         try {
             const allData = await Menu.findAll({
                 where: {
-                    deletedAt: null,
+                    deleted_at: null,
                     is_active: true
                 },
                 attributes: ['id', 'name', 'icon', 'url', 'is_active', 'master_menu'],
@@ -34,7 +34,7 @@ module.exports = {
             const { id } = req.params
             const allData = await Menu.findOne({
                 where: {
-                    deletedAt: null,
+                    deleted_at: null,
                     is_active: true,
                     id: id
                 },
@@ -58,7 +58,7 @@ module.exports = {
 
     async create(req, res, next) {
         try {
-            const { name, icon, url, is_active, master_menu, createdBy } = req.body
+            const { name, icon, url, is_active, master_menu, created_by } = req.body
             
             let data = {
                 name: name,
@@ -66,14 +66,14 @@ module.exports = {
                 url: url,
                 is_active: is_active,
                 master_menu: master_menu,
-                createdBy: createdBy,
-                createdAt: new Date()
+                created_by: created_by,
+                created_at: new Date()
             }
             if(master_menu != 0) {
                 const findMasterMenu = await Menu.findOne({
                     where: {
                         id: master_menu,
-                        deletedAt: null,
+                        deleted_at: null,
                         is_active: true,
                     },
                     order: [
@@ -90,7 +90,7 @@ module.exports = {
                     const findLastPositionNumber = await Menu.findOne({
                         where: {
                             master_menu: master_menu,
-                            deletedAt: null,
+                            deleted_at: null,
                             is_active: true
                         },
                         order: [
@@ -102,7 +102,7 @@ module.exports = {
             } else {
                 const getLatestPositionMasterMenu = await Menu.findOne({
                     where: {
-                        deletedAt: null,
+                        deleted_at: null,
                         is_active: true,
                     },
                     order: [
@@ -131,27 +131,27 @@ module.exports = {
     async update(req, res, next) {
         try {
             const { id } = req.params
-            const { name, icon, url, is_active, master_menu, updatedBy } = req.body
+            const { name, icon, url, is_active, master_menu, updated_by } = req.body
             
             let data = {
                 name: name,
                 icon: icon,
                 url: url,
                 is_active: is_active,
-                updatedBy: updatedBy,
-                updatedAt: new Date()
+                updated_by: updated_by,
+                updated_at: new Date()
             }
             
             const findMenuById = await Menu.findOne({
                 where: {
                     id: id,
-                    deletedAt: null,
+                    deleted_at: null,
                     is_active: true,
                 }
             })
 
             if(findMenuById) {
-                const updateData = await Menu.update(data, {
+                const updated_ata = await Menu.update(data, {
                     where: {
                         id: id
                     }
@@ -178,7 +178,7 @@ module.exports = {
     async delete(req, res, next) {
         try {
             const { id } = req.params
-            const { deletedBy } = req.body
+            const { deleted_by } = req.body
 
             const data = await Menu.findOne({
                 where: {
@@ -188,9 +188,9 @@ module.exports = {
             })
 
             if (data) {
-                const deleteData = await Menu.update({
-                    deletedAt: new Date(),
-                    deletedBy: deletedBy
+                const deleted_ata = await Menu.update({
+                    deleted_at: new Date(),
+                    deleted_by: deleted_by
                 }, {
                     where: {
                         id: id
@@ -257,14 +257,14 @@ module.exports = {
 
     async newPositions(req, res, next) {
         try {
-            const { positions, updatedBy } = req.body
+            const { positions, updated_by } = req.body
 
             positions.forEach((index) => {
                 let data = {
                     master_menu: index[2],
                     position_number: index[1],
-                    updatedBy: updatedBy,
-                    updatedAt: new Date()
+                    updated_by: updated_by,
+                    updated_at: new Date()
                 }
 
                 Menu.update(data, {

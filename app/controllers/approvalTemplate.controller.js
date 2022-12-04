@@ -141,7 +141,7 @@ module.exports = {
 
     async update(req, res, next) {
         try {
-            const { name, type, approver_one, approver_two, approver_three, updatedBy } = req.body
+            const { name, type, approver_one, approver_two, approver_three, updated_by } = req.body
             const { id } = req.params
 
             const data = await ApprovalTemplate.findOne({
@@ -158,8 +158,8 @@ module.exports = {
                     approver_one: approver_one,
                     approver_two: approver_two,
                     approver_three: approver_three,
-                    updatedBy: updatedBy,
-                    updatedAt: new Date()
+                    updated_by: updated_by,
+                    updated_at: new Date()
                 }
                 const update = await ApprovalTemplate.update(updatingData, {
                     where: {

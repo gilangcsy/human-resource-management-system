@@ -7,7 +7,7 @@ module.exports = {
         try {
             const allData = await Department.findAll({
                 where: {
-                    deletedAt: null
+                    deleted_at: null
                 },
                 attributes: ['id', 'name'],
                 include: [
@@ -15,7 +15,7 @@ module.exports = {
                         model: Role,
                         attributes: ['id', 'name'],
                         where: {
-                            deletedAt: null
+                            deleted_at: null
                         }
                     },
                 ],
@@ -96,7 +96,7 @@ module.exports = {
 
             if (data) {
                 const deleteData = await Department.update({
-                    deletedAt: new Date(),
+                    deleted_at: new Date(),
                     deletedBy: deletedBy
                 }, {
                     where: {

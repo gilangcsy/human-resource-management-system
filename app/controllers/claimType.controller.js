@@ -7,11 +7,11 @@ module.exports = {
             const { id } = req.query;
             const allData = await ClaimType.findAll({
                 where: {
-                    deletedAt: null
+                    deleted_at: null
                 },
                 attributes: ['id', 'name'],
                 order: [
-                    ['createdAt', 'ASC']
+                    ['created_at', 'ASC']
                 ]
             })
 
@@ -58,7 +58,7 @@ module.exports = {
 
     async create(req, res, next) {
         try {
-            const { name, createdBy, updatedBy } = req.body
+            const { name, created_by, updated_by } = req.body
 
             const creatingClaimType = await ClaimType.create(req.body)
 
@@ -76,7 +76,7 @@ module.exports = {
     async delete(req, res, next) {
         try {
             const { id } = req.params
-            const { deletedBy } = req.body
+            const { deleted_by } = req.body
 
             const data = await ClaimType.findOne({
                 where: {
@@ -87,8 +87,8 @@ module.exports = {
 
             if (data) {
                 const deleteData = await ClaimType.update({
-                    deletedAt: new Date(),
-                    deletedBy: deletedBy
+                    deleted_at: new Date(),
+                    deleted_by: deleted_by
                 }, {
                     where: {
                         id: id
@@ -113,7 +113,7 @@ module.exports = {
 
     async update(req, res, next) {
         try {
-            const { name, updatedBy } = req.body
+            const { name, updated_by } = req.body
             const { id } = req.params
 
             const data = await ClaimType.findOne({
@@ -126,8 +126,8 @@ module.exports = {
             if(data) {
                 let updatingData = {
                     name: name,
-                    updatedBy: updatedBy,
-                    updatedAt: new Date()
+                    updated_by: updated_by,
+                    updated_at: new Date()
                 }
                 const update = await ClaimType.update(updatingData, {
                     where: {

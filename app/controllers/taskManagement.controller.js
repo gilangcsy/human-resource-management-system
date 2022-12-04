@@ -26,18 +26,18 @@ module.exports = {
 
     async create(req, res, next) {
         try {
-            const { name, startDate, endDate, assignTo, priority, status, ownerId, description, createdBy } = req.body
+            const { name, start_date, end_date, assign_to, priority, status, owner_id, description, created_by } = req.body
 
             const taskData = {
                 name: name,
-                startDate: startDate,
+                start_date: start_date,
                 description: description,
-                endDate: endDate,
-                assignTo: assignTo,
+                end_date: end_date,
+                assign_to: assign_to,
                 priority: priority,
                 status: status,
-                ownerId: ownerId,
-                createdBy
+                owner_id: owner_id,
+                created_by
             }
 
             const createTask = await Task.create(taskData)
@@ -77,18 +77,18 @@ module.exports = {
     async update(req, res, next) {
         try {
             const { id } = req.params
-            const { name, startDate, endDate, assignTo, priority, status, ownerId, description, updatedBy } = req.body
+            const { name, start_date, end_date, assign_to, priority, status, owner_id, description, updated_by } = req.body
             
             const taskData = {
                 name: name,
-                startDate: startDate,
+                start_date: start_date,
                 description: description,
-                endDate: endDate,
-                assignTo: assignTo,
+                end_date: end_date,
+                assign_to: assign_to,
                 priority: priority,
                 status: status,
-                ownerId: ownerId,
-                updatedBy: updatedBy
+                owner_id: owner_id,
+                updated_by: updated_by
             }
 
             const updateTask = await Task.update(taskData, {
@@ -114,10 +114,10 @@ module.exports = {
     async delete(req, res, next) {
         try {
             const { id } = req.params
-            const { deletedBy } = req.body
+            const { deleted_by } = req.body
             const deleteData = {
-                deletedAt: new Date(),
-                deletedBy: deletedBy
+                deleted_at: new Date(),
+                deleted_by: deleted_by
             }
             const softDelete = await Task.update(deleteData, {
                 where: {

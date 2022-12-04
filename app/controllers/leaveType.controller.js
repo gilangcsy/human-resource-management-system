@@ -7,7 +7,7 @@ module.exports = {
             const { id } = req.query;
             const allData = await LeaveType.findAll({
                 where: {
-                    deletedAt: null
+                    deleted_at: null
                 },
                 attributes: ['id', 'name'],
                 order: [
@@ -58,7 +58,7 @@ module.exports = {
 
     async create(req, res, next) {
         try {
-            const { name, createdBy, updatedBy } = req.body
+            const { name, createdBy, updated_by } = req.body
 
             const creatingLeaveType = await LeaveType.create(req.body)
 
@@ -76,7 +76,7 @@ module.exports = {
     async delete(req, res, next) {
         try {
             const { id } = req.params
-            const { deletedBy } = req.body
+            const { deleted_by } = req.body
 
             const data = await LeaveType.findOne({
                 where: {
@@ -86,9 +86,9 @@ module.exports = {
             })
 
             if (data) {
-                const deleteData = await LeaveType.update({
-                    deletedAt: new Date(),
-                    deletedBy: deletedBy
+                const deleted_ata = await LeaveType.update({
+                    deleted_at: new Date(),
+                    deleted_by: deleted_by
                 }, {
                     where: {
                         id: id
@@ -113,7 +113,7 @@ module.exports = {
 
     async update(req, res, next) {
         try {
-            const { name, updatedBy } = req.body
+            const { name, updated_by } = req.body
             const { id } = req.params
 
             const data = await LeaveType.findOne({
@@ -126,8 +126,8 @@ module.exports = {
             if(data) {
                 let updatingData = {
                     name: name,
-                    updatedBy: updatedBy,
-                    updatedAt: new Date()
+                    updated_by: updated_by,
+                    updated_at: new Date()
                 }
                 const update = await LeaveType.update(updatingData, {
                     where: {

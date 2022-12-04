@@ -7,7 +7,7 @@ module.exports = {
         try {
             const allData = await Role.findAll({
                 where: {
-                    deletedAt: null
+                    deleted_at: null
                 },
                 attributes: ['id', 'name'],
                 include: [
@@ -15,14 +15,14 @@ module.exports = {
                         model: User,
                         attributes: ['id', 'full_name', 'RoleId'],
                         where: {
-                            deletedAt: null,
-                            isVerified: true,
-                            isActive: true
+                            deleted_at: null,
+                            is_verified: true,
+                            is_active: true
                         },
                     },
                 ],
                 order: [
-                    ['createdAt', 'ASC']
+                    ['created_at', 'ASC']
                 ]
             })
 
@@ -41,11 +41,11 @@ module.exports = {
         try {
             const allData = await Role.findAll({
                 where: {
-                    deletedAt: null
+                    deleted_at: null
                 },
                 attributes: ['id', 'name'],
                 order: [
-                    ['createdAt', 'ASC']
+                    ['created_at', 'ASC']
                 ]
             })
 
@@ -62,11 +62,11 @@ module.exports = {
 
     async readBySuperiorId(req, res, next) {
         try {
-            const { superiorId } = req.params
+            const { superior_id } = req.params
             const allData = await Role.findAll({
                 where: {
-                    deletedAt: null,
-                    superiorId: superiorId
+                    deleted_at: null,
+                    superior_id: superior_id
                 },
                 attributes: ['id', 'name'],
                 include: [
@@ -74,14 +74,14 @@ module.exports = {
                         model: User,
                         attributes: ['id', 'full_name', 'RoleId'],
                         where: {
-                            deletedAt: null,
+                            deleted_at: null,
                             isVerified: true,
                             isActive: true
                         },
                     },
                 ],
                 order: [
-                    ['createdAt', 'ASC']
+                    ['created_at', 'ASC']
                 ]
             })
 
@@ -103,7 +103,7 @@ module.exports = {
                 where: {
                     id: id
                 },
-                attributes: ['id', 'name', 'superiorId']
+                attributes: ['id', 'name', 'superior_id']
             })
 
             if (data) {
@@ -127,7 +127,9 @@ module.exports = {
 
     async create(req, res, next) {
         try {
-            const { name, superiorId, createdBy, updatedBy, DepartmentId } = req.body
+            const { name, superior_id, created_by, updated_by, DepartmentId } = req.body
+
+            console.log(req.body)
 
             const creatingRole = await Role.create(req.body)
 
@@ -145,7 +147,7 @@ module.exports = {
     async delete(req, res, next) {
         try {
             const { id } = req.params
-            const { deletedBy } = req.body
+            const { deleted_by } = req.body
 
             const data = await Role.findOne({
                 where: {
@@ -156,8 +158,8 @@ module.exports = {
 
             if (data) {
                 const deleteData = await Role.update({
-                    deletedAt: new Date(),
-                    deletedBy: deletedBy
+                    deleted_at: new Date(),
+                    deleted_by: deleted_by
                 }, {
                     where: {
                         id: id
@@ -182,7 +184,7 @@ module.exports = {
 
     async update(req, res, next) {
         try {
-            const { name, updatedBy, superiorId } = req.body
+            const { name, updated_by, superior_id } = req.body
             const { id } = req.params
 
             const data = await Role.findOne({
@@ -195,9 +197,9 @@ module.exports = {
             if(data) {
                 let updatingData = {
                     name: name,
-                    updatedBy: updatedBy,
-                    superiorId: superiorId,
-                    updatedAt: new Date()
+                    updated_by: updated_by,
+                    superior_id: superior_id,
+                    updated_at: new Date()
                 }
                 const update = await Role.update(updatingData, {
                     where: {
